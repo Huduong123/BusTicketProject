@@ -1,0 +1,90 @@
+extends layouts/layout
+
+block head
+    link(rel="stylesheet" href="/css/datve.css")
+    script(src="/js/datve.js")
+    script(src="/js/datveSeat.js")
+
+block content
+  .container
+    .header-datve
+      h1#trip-name= tripName
+      p#trip-date= tripDate
+
+    .booking-section
+      .ticket-box
+        .left-panel
+          .seat-selection
+            h3 Chọn ghế
+            a(href="#") Thông tin xe
+            .seat-legend
+              span.sold Đã bán
+              span.available Còn trống
+              span.selected Đang chọn
+
+            .seat-layout
+              .floor
+                p Tầng dưới
+                .seat-grid
+              .floor
+                p Tầng trên
+                .seat-grid
+
+          .customer-info
+            h3 Thông tin khách hàng
+              .info-columns
+                .info-left
+                  form(action="/checkout", method="POST")
+                    label Họ và tên *
+                    input(type="text", name="fullname", required)
+
+                    label Số điện thoại *
+                    input(type="text", name="phone", required)
+
+                    label Email *
+                    input(type="email", name="email", required)
+
+                    .terms-check
+                      input(type="checkbox", name="terms", required)
+                      | Chấp nhận điều khoản & chính sách bảo mật của FUTA Bus Lines
+
+                .info-right
+                  h4 ĐIỀU KHOẢN & LƯU Ý
+                  p(*).
+                    Quý khách vui lòng có mặt tại bến xuất phát của xe trước ít nhất 30 phút trước giờ xe khởi hành, mang theo thông báo đã thanh toán vé thành công có chứa mã vé được gửi từ hệ thống FUTA Bus Lines.
+                  p(*).
+                    Nếu quý khách có nhu cầu trung chuyển, vui lòng liên hệ Tổng đài trung chuyển 1900 6918 trước khi đặt vé.
+
+          .station-info
+            h3 Thông tin đón trả
+            .pickup
+              label Điểm đón
+              select(name="pickup")
+                option(value="BacLieu") Mặc định
+            .dropoff
+              label Điểm trả
+              select(name="dropoff")
+                option(value="BX_MienTay") Mặc định
+
+        .right-panel
+          .route-info
+            h3 Thông tin chuyến đi
+            p#route-name Tuyến: #{tripName}
+            p#departure-time Thời gian khởi hành: #{tripDate}
+            p Số lượng ghế:
+              span#seat-count  0 ghế
+            p Ghế đã chọn:
+              span#selected-seats  Không có
+
+          .ticket-info
+            h3 Chi tiết vé
+            p Giá vé:
+              span#ticket-price 0đ
+            p Phí thanh toán:
+              span#payment-fee 0đ
+            p Tổng tiền:
+              span#final-price 0đ
+          .actions
+          form(method="GET" action="/thanhtoan")
+            button#book-ticket-btn.btn-primary-thanhtoan(type="button") Đặt vé
+

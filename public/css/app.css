@@ -1,0 +1,290 @@
+/* Reset styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+  }
+  
+  /* Header styles */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ff6600;
+    padding: 10px 20px;
+  }
+  
+  .header img {
+    width: 100px;
+    height: auto;
+  }
+  
+  /* Nav styles */
+  .nav {
+    display: flex;
+    justify-content: center; /* Canh giữa tất cả các mục menu */
+    align-items: center;
+    width: 100%;
+  }
+  
+  .nav-left {
+    display: flex;
+    gap: 20px;
+    justify-content: center; /* Canh giữa các liên kết trong nav-left */
+    flex-grow: 1; /* Chắc chắn rằng nav-left chiếm toàn bộ không gian còn lại */
+  }
+  
+  .nav-right {
+    margin-left: auto;
+  }
+  
+  .nav a {
+    text-decoration: none;
+    color: white;
+    font-size: 16px;
+    padding: 10px 20px;
+    transition: color 0.3s ease, background-color 0.3s ease;
+  }
+  
+  .nav a:hover {
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+  }
+  
+  /* Banner styles */
+/* Banner styles */
+.banner {
+  text-align: center;
+  padding: 40px 0; /* Tăng padding để banner cao hơn */
+  background: linear-gradient(to right, #ff9900, #ff6600);
+  color: white;
+  width: 100%; /* Trải dài toàn bộ trang */
+}
+
+/* Hình ảnh trong banner */
+.banner img {
+  width: 100%; /* Hình ảnh chiếm toàn bộ chiều rộng banner */
+  max-width: 500px; /* Giới hạn tối đa */
+  
+  margin: 20px auto;
+  display: block; /* Đảm bảo căn giữa */
+  border-radius: 10px; /* Bo góc nhẹ */
+}
+
+  
+  .banner h1 {
+    font-size: 24px;
+    margin-bottom: 5px;
+  }
+  
+  /* Search section styles */
+  .search-section {
+    background: white;
+    margin: -30px auto 0;
+    padding: 20px;
+    width: 90%;
+    max-width: 800px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+  }
+  
+  .search-section form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  /* Group styles for inline elements */
+  .inline-group {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Khoảng cách giữa label và input */
+  }
+  
+  .inline-group label {
+    flex-basis: 30%; /* Chiếm 30% chiều rộng dòng */
+    font-size: 14px;
+    color: #555;
+  }
+  
+  .inline-group select,
+  .inline-group input {
+    flex-basis: 70%; /* Chiếm 70% chiều rộng dòng */
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  .date-group {
+    padding-top: 15px;
+    display: flex;
+    flex-direction: column; /* Dòng dọc mặc định khi chỉ có Ngày đi */
+  }
+  .date-group.flex-row {
+    flex-direction: row; /* Hiển thị Ngày đi và Ngày về ngang nhau */
+    gap: 20px; /* Khoảng cách giữa 2 nhóm Ngày đi và Ngày về */
+  }
+  .date-group .inline-group {
+    flex: 1;
+  }
+  
+  .date-group .inline-group label {
+    flex: 30%; /* Chiếm 30% không gian của một dòng */
+  }
+  
+  .date-group .inline-group input {
+    flex: 70%; /* Chiếm 70% không gian còn lại */
+  }
+
+  /* Button styles */
+  .search-section button {
+    padding: 10px 15px;
+    background-color: #ff6600;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    align-self: center; /* Căn giữa nút trong form */
+    margin-top: 20px; /* Đảm bảo có khoảng cách phía trên nếu cần */
+}
+  
+
+
+  .search-section button:hover {
+    background-color: #e65c00;
+  }
+
+  /* Ẩn ngày về ban đầu */
+.date-group .inline-group:nth-child(2) {
+  display: none;
+}
+
+.trip-options {
+  display: flex;
+  gap: 10px; /* Tạo khoảng cách giữa các phần tử con */
+  align-items: center; /* Căn giữa các phần tử theo chiều dọc */
+}
+.trip-options label {
+  margin-left: 0.5px; /* Khoảng cách giữa radio button và text */
+}
+
+/* Làm mờ nền khi mở modal */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* Modal nền */
+.login-modal {
+  display: none; /* Ẩn ban đầu */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Modal nền */
+.login-modal {
+  display: none; /* Ban đầu ẩn */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+}
+/* Footer Container */
+.footer-container {
+  background-color: #f0f0f0; /* Màu nền xám nhạt */
+  color: #333366; /* Màu chữ xanh đậm */
+  padding: 20px 10px;
+  margin-top: 20px;
+  font-size: 14px;
+  border-top: 3px solid #f0f0f0; /* Thêm viền cam trên cùng */
+}
+
+/* Chia footer thành 2 cột */
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1000px;
+  margin: auto;
+  flex-wrap: wrap;
+}
+
+/* Phần thông tin tổng đài */
+.footer-info {
+  flex: 1;
+  text-align: left;
+  padding: 10px;
+  min-width: 300px;
+}
+
+.footer-info h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #ff6600; /* Tiêu đề màu cam */
+}
+
+.footer-info p, .footer-info a {
+  color: #333366; /* Chữ xanh đậm */
+  text-decoration: none;
+  margin: 5px 0;
+}
+
+.footer-info a:hover {
+  text-decoration: underline;
+  color: #ff6600; /* Hover màu cam */
+}
+
+/* Phần mạng xã hội */
+.footer-social {
+  flex: 1;
+  text-align: right;
+  padding: 10px;
+  min-width: 300px;
+}
+
+.footer-social h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #ff6600; /* Tiêu đề màu cam */
+}
+
+/* Icon mạng xã hội */
+.footer-social a {
+  display: inline-block;
+  margin: 0 10px;
+}
+
+.footer-social img {
+  width: 30px;
+  height: 30px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.footer-social img:hover {
+  transform: scale(1.2);
+  opacity: 0.8;
+}
+
+

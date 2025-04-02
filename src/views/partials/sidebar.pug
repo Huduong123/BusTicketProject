@@ -1,0 +1,39 @@
+nav.sidebar
+  ul
+    li
+      a(href="/admins/dashboard") 🏠 Tổng quan
+    li
+      a(href="/admins/routes") 🚌 Quản lý Tuyến Xe
+    li
+      a(href="/admins/trips") 📅 Quản lý Chuyến Xe
+    li
+      a(href="/admins/tickets") 🎟️ Quản lý Vé Đặt
+
+    // 🔽 Dropdown Quản lý tài khoản
+    li
+      a(href="javascript:void(0);" onclick="toggleMenu('accountMenu')") 👥 Quản lý tài khoản ▾
+      ul#accountMenu(style="display: none; padding-left: 20px;")
+        li
+          a(href="/admins/customers") 👤 Khách hàng
+        li
+          a(href="/admins/admin") 🛡️ Admin
+
+    // 🔽 Dropdown Doanh Thu
+    li
+      a(href="javascript:void(0);" onclick="toggleMenu('revenueMenu')") 💰 Doanh Thu ▾
+      ul#revenueMenu(style="display: none; padding-left: 20px;")
+        li
+          a(href="/admins/payments") 📄 Quản lí thanh toán
+        li
+          a(href="/admins/payments/report") 📊 Thống kê doanh thu
+
+    li
+      a(href="/admins/settings") ⚙️ Cấu Hình & Cài Đặt
+    li.logout
+      a(href="/admins/logout") 🚪 Đăng xuất
+
+  script.
+    function toggleMenu(id) {
+      const menu = document.getElementById(id);
+      menu.style.display = (menu.style.display === 'none') ? 'block' : 'none';
+    }

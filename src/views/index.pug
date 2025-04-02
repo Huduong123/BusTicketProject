@@ -1,0 +1,199 @@
+extends layouts/layout
+
+block head
+  link(rel="stylesheet" href="/css/search.css")
+
+block content
+  .banner
+    h1 FUTA Group - Vững tin & phát triển
+    img(src="/images/futa.png" alt="FUTA Buses")
+
+  .search-section
+    form(action="#" method="GET" id="searchForm")
+      .trip-options
+        input(type="radio" name="type" value="one-way" checked id="one-way")
+        label(for="one-way") Một chiều
+
+        input(type="radio" name="type" value="round-trip" id="round-trip")
+        label(for="round-trip") Khứ hồi
+
+      .inline-group
+        label(for="departure") Chọn điểm đi
+        select(name="departure" id="departure")
+          option(value="" disabled selected) Đang tải...
+
+      .inline-group
+        label(for="destination") Chọn điểm đến
+        select(name="destination" id="destination")
+          option(value="" disabled selected) Đang tải...
+
+      .inline-group
+        label(for="tickets") Số vé
+        input(type="number" name="tickets" min="1" max="5" value="1")
+
+      .date-group
+        .inline-group
+          label(for="start-date") Chọn ngày đi
+          input(type="date" name="start-date" id="start-date")
+        .inline-group
+          label(for="end-date") Chọn ngày về
+          input(type="date" name="end-date" id="end-date")
+
+      button(type="button" id="searchButton") Tìm chuyến xe
+
+  .trip-results#tripResults
+    if trips
+      h2 #{departure_location} - #{destination_location}
+      - let labelInserted = false;
+      each trip, index in trips
+        - const departureTime = new Date(trip['Thời gian đi']);
+        - const arrivalTime = new Date(trip['Thời gian đến']);
+        - const durationMs = arrivalTime - departureTime;
+        - const durationHours = Math.floor(durationMs / (1000 * 60 * 60));
+        - const durationMinutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
+        - const formattedDuration = `${durationHours} giờ ${durationMinutes} phút`;
+        - const isExact = trip['Điểm đi'].toLowerCase() === departure_location.toLowerCase() && trip['Điểm đến'].toLowerCase() === destination_location.toLowerCase();
+
+        if !isExact && !labelInserted
+          .label-divider(style="text-align:center; margin: 20px 0; font-weight:bold; color: #555") Các chuyến tương tự khác
+          - labelInserted = true;
+
+        .trip-item
+          .trip-container
+            .trip-header
+              span.trip-time= departureTime.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+              span.trip-duration= formattedDuration
+              span.trip-time= arrivalTime.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+            .trip-body
+              p.trip-location #{trip['Điểm đi']} → #{trip['Điểm đến']}
+              p.trip-info • #{trip['Loại xe']} • Còn #{trip['Số ghế trống']} ghế trống
+              p.trip-price #{trip['Giá tiền']} VNĐ
+            form(action="/datve" method="GET")
+              input(type="hidden" name="tripId" value=trip.id)
+              input(type="hidden" name="tripName" value=`${trip['Điểm đi']} - ${trip['Điểm đến']}`)
+              input(type="hidden" name="tripDate" value=trip['Thời gian đi'])
+              input(type="hidden" name="tripPrice" value=trip['Giá tiền'])
+              button.select-trip(type="submit") Chọn chuyến
+
+  script.
+    async function loadLocations() {
+      try {
+        const response = await fetch('/locations');
+        const locations = await response.json();
+
+        const departureSelect = document.getElementById('departure');
+        const destinationSelect = document.getElementById('destination');
+
+        departureSelect.innerHTML = '<option value="" disabled selected>Chọn điểm đi</option>';
+        destinationSelect.innerHTML = '<option value="" disabled selected>Chọn điểm đến</option>';
+
+        locations.forEach(location => {
+          const option1 = document.createElement('option');
+          option1.value = location.name_location;
+          option1.textContent = location.name_location;
+
+          const option2 = option1.cloneNode(true);
+
+          departureSelect.appendChild(option1);
+          destinationSelect.appendChild(option2);
+        });
+      } catch (error) {
+        console.error('Lỗi khi tải danh sách địa điểm:', error);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadLocations);
+
+    document.getElementById('searchButton').addEventListener('click', async function () {
+      const tripResults = document.getElementById('tripResults');
+      tripResults.innerHTML = '';
+
+      const departure = document.getElementById('departure').value;
+      const destination = document.getElementById('destination').value;
+      const startDate = document.getElementById('start-date').value;
+
+      if (!departure || !destination || !startDate) {
+        alert('Vui lòng nhập đầy đủ thông tin điểm đi, điểm đến và ngày đi!');
+        return;
+      }
+
+      const title = document.createElement('h2');
+      title.textContent = `${departure} - ${destination}`;
+      title.classList.add('trip-title');
+      tripResults.appendChild(title);
+
+      try {
+        const response = await fetch(`/trips/search-details?departure_location=${departure}&destination_location=${destination}&departure_time=${startDate}`);
+        const data = await response.json();
+
+        if (response.status !== 200) {
+          tripResults.innerHTML += `<p>${data.message}</p>`;
+          return;
+        }
+
+        const trips = data.trips;
+
+        if (trips.length === 0) {
+          tripResults.innerHTML += '<p>Không tìm thấy chuyến xe nào phù hợp.</p>';
+          return;
+        }
+
+        let labelInserted = false;
+
+        trips.forEach((trip, index) => {
+          const isExact = trip['Điểm đi'].toLowerCase() === departure.toLowerCase() && trip['Điểm đến'].toLowerCase() === destination.toLowerCase();
+
+          if (!isExact && !labelInserted) {
+            const label = document.createElement('div');
+            label.textContent = 'Các chuyến tương tự khác';
+            label.className = 'label-divider';
+            label.style = 'text-align:center; margin: 20px 0; font-weight:bold; color: #555';
+            tripResults.appendChild(label);
+            labelInserted = true;
+          }
+
+          const departureTime = new Date(trip['Thời gian đi']);
+          const arrivalTime = new Date(trip['Thời gian đến']);
+          const durationMs = arrivalTime - departureTime;
+          const durationHours = Math.floor(durationMs / (1000 * 60 * 60));
+          const durationMinutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
+          const formattedDuration = `${durationHours} giờ ${durationMinutes} phút`;
+
+          const tripDiv = document.createElement('div');
+          tripDiv.classList.add('trip-item');
+          tripDiv.innerHTML = `
+            <div class="trip-container">
+              <div class="trip-header">
+                <span class="trip-time">${departureTime.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}</span>
+                <span class="trip-duration">${formattedDuration}</span>
+                <span class="trip-time">${arrivalTime.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}</span>
+              </div>
+              <div class="trip-body">
+                <p class="trip-location">${trip['Điểm đi']} → ${trip['Điểm đến']}</p>
+                <p class="trip-info">• ${trip['Loại xe']} • Còn ${trip['Số ghế trống']} ghế trống</p>
+                <p class="trip-price">${trip['Giá tiền']} VNĐ</p>
+              </div>
+              <button class="select-trip" data-id="${trip.id || index}" data-trip='${JSON.stringify(trip)}'>Chọn chuyến</button>
+            </div>
+          `;
+          tripResults.appendChild(tripDiv);
+        });
+
+        document.querySelectorAll('.select-trip').forEach(button => {
+          button.addEventListener('click', function () {
+            const tripData = JSON.parse(this.getAttribute('data-trip'));
+            const tripId = tripData.id || this.getAttribute('data-id');
+            const tripName = `${tripData['Điểm đi']} - ${tripData['Điểm đến']}`;
+            const tripPrice = tripData['Giá tiền'];
+            const options = { weekday: 'short', day: '2-digit', month: '2-digit' };
+            const tripDate = new Date(tripData['Thời gian đi']).toLocaleDateString('vi-VN', options);
+
+            window.location.href = `/datve?tripId=${encodeURIComponent(tripId)}&tripName=${encodeURIComponent(tripName)}&tripDate=${encodeURIComponent(tripDate)}&tripPrice=${encodeURIComponent(tripPrice)}`;
+          });
+        });
+
+      } catch (error) {
+        console.error('Lỗi khi gọi API:', error);
+        tripResults.innerHTML = '<p>Có lỗi xảy ra khi tìm kiếm chuyến xe.</p>';
+      }
+    });

@@ -1,0 +1,11 @@
+extends layouts/layout
+
+block head
+    link(rel="stylesheet" href="/css/tracuuve.css") 
+block content
+    main.container
+        h2.search-title Tra Cứu Thông Tin Đặt Vé
+        form.search-form(method="POST" action="/tra-cuu-ve")
+            input(type="tel" name="phone" placeholder="Vui lòng nhập số điện thoại" )
+            input(type="text" name="ticket-code" placeholder="Vui lòng nhập mã vé" )
+            button.search-button(type="submit") Tra cứu

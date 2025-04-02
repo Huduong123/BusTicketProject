@@ -1,0 +1,82 @@
+extends ../../layouts/layoutAdmin
+
+block content
+  .container.mt-4
+    h2.text-center.mb-4 Thống kê doanh thu
+
+    // 🔍 Form lọc doanh thu
+    form(action="/admins/payments/report" method="GET" class="row g-3 mb-4 border rounded p-3 bg-light")
+      .col-md-3
+        label.form-label(for="day") Lọc theo ngày
+        input.form-control(type="date" name="day" id="day" value=(day || ''))
+
+      .col-md-3
+        label.form-label(for="month") Lọc theo tháng
+        input.form-control(type="month" name="month" id="month" value=(month || ''))
+
+      .col-md-3
+        label.form-label(for="year") Lọc theo năm
+        input.form-control(type="number" name="year" id="year" min="2000" max="2100" value=(year || ''))
+
+      .col-md-3.align-self-end.text-center
+        button.btn.btn-primary(type="submit") Lọc thống kê
+        a.btn.btn-secondary.ms-2(href="/admins/payments/report") Reset
+
+    if totalByDay
+      h4.mt-5.text-primary.text-center Tổng doanh thu ngày #{day}: #{totalByDay.toLocaleString('vi-VN')} đ
+
+    if totalByMonth
+      h4.mt-3.text-success.text-center Tổng doanh thu tháng #{month}: #{totalByMonth.toLocaleString('vi-VN')} đ
+
+    if totalByYear
+      h4.mt-3.text-warning.text-center Tổng doanh thu năm #{year}: #{totalByYear.toLocaleString('vi-VN')} đ
+
+    hr
+
+    h4.mt-5.text-primary Doanh thu theo ngày
+    table.table.table-bordered.table-hover
+      thead.table-dark
+        tr
+          th Ngày
+          th Tổng doanh thu
+      tbody
+        if reportByDay.length
+          each item in reportByDay
+            tr
+              td= item.date
+              td= item.total.toLocaleString('vi-VN') + ' đ'
+        else
+          tr
+            td(colspan="2") Không có dữ liệu
+
+    h4.mt-5.text-success Doanh thu theo tháng
+    table.table.table-bordered.table-hover
+      thead.table-dark
+        tr
+          th Tháng
+          th Tổng doanh thu
+      tbody
+        if reportByMonth.length
+          each item in reportByMonth
+            tr
+              td= item.month
+              td= item.total.toLocaleString('vi-VN') + ' đ'
+        else
+          tr
+            td(colspan="2") Không có dữ liệu
+
+    h4.mt-5.text-warning Doanh thu theo năm
+    table.table.table-bordered.table-hover
+      thead.table-dark
+        tr
+          th Năm
+          th Tổng doanh thu
+      tbody
+        if reportByYear.length
+          each item in reportByYear
+            tr
+              td= item.year
+              td= item.total.toLocaleString('vi-VN') + ' đ'
+        else
+          tr
+            td(colspan="2") Không có dữ liệu

@@ -1,0 +1,22 @@
+doctype html
+html(lang="vi")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title Đăng nhập Admin
+    link(rel="stylesheet" href="/css/dangnhapAdmin.css") 
+    script(src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js")
+
+  body
+    .login-box
+      h2 Đăng nhập Admin
+      form(action="/admins/login" method="POST")
+        .input-group
+          label(for="username") Tên đăng nhập
+          input(type="text" name="username" id="username" required)
+        .input-group
+          label(for="password") Mật khẩu
+          input(type="password" name="password" id="password" required)
+        .button-group
+          button(type="submit") Đăng nhập
+      p#loginMessage(style="color: red; display: none") 

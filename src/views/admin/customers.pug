@@ -1,0 +1,18 @@
+extends ../layouts/layoutAdmin
+
+block content
+  h2 Quản lý Khách Hàng
+  table
+    thead
+      tr
+        th Tên
+        th SĐT
+        th Email
+        th Lịch sử đặt vé
+    tbody
+      tr
+        td Nguyễn Văn A
+        td 0123456789
+        td email@example.com
+        td
+          a(href="/admin/customers/history/1") Xem lịch sử

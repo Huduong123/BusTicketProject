@@ -1,0 +1,109 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f7f7f7;
+  }
+  
+  
+  /* Content */
+  .content {
+    margin-top: 20px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center; /* Căn giữa nội dung */
+  }
+  
+  h1 {
+    color: #e67e22;
+    text-align: center;
+    padding-bottom: 20px;
+  }
+  
+  /* Search Section */
+  .search-section {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  
+  .inline-group {
+    margin: 0 10px;
+  }
+  
+  label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  input {
+    padding: 8px;
+    width: 200px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  button {
+    padding: 10px;
+    background: #e67e22;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background: #d35400;
+  }
+  
+  /* Schedule Table */
+  .schedule-table {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  th {
+    background: #e67e22;
+    color: white;
+  }
+  
+  .find-btn {
+    background: #3498db;
+    padding: 8px;
+    border-radius: 4px;
+  }
+  
+  .find-btn:hover {
+    background: #2980b9;
+  }
+  
+  /* Scrollbar */
+  .schedule-table::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .schedule-table::-webkit-scrollbar-thumb {
+    background: #e67e22;
+    border-radius: 4px;
+  }
+  
+  .schedule-table::-webkit-scrollbar-track {
+    background: #f7f7f7;
+  }
+  

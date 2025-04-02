@@ -1,0 +1,214 @@
+/* Reset */
+body {
+  font-family: 'Roboto', sans-serif;
+  background: #f5f5f5;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Làm mờ khung lớn */
+.container {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.8); /* Làm mờ nền */
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  backdrop-filter: blur(5px); /* Hiệu ứng làm mờ */
+}
+
+/* Header */
+.header-thanhtoan {
+  text-align: center;
+  background: #ff6600;
+  padding: 10px;
+  border-radius: 12px;
+  color: white;
+}
+
+.header-thanhtoan h1 {
+  font-size: 28px;
+  margin: 0;
+}
+
+.header-thanhtoan p {
+  font-size: 18px;
+  margin: 5px 0 0;
+}
+
+/* Layout chung */
+.content-wrapper {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+/* Cột phương thức thanh toán */
+.payment-methods {
+  flex: 1;
+  padding: 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.method {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: #fff;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+}
+.method:hover {
+  background: #f8f8f8;
+  border-color: #ff6600;
+}
+.method input {
+  display: none;
+}
+
+.method img {
+  width: 40px;
+  height: 40px;
+}
+
+.method span {
+  font-size: 16px;
+  font-weight: 500;
+}
+/* Khi phương thức được chọn */
+.method.active {
+  background: #ff6600;
+  border-color: #ff6600;
+  color: white;
+  font-weight: bold;
+}
+
+/* Cột tổng thanh toán + QR Code */
+.payment-summary {
+  flex: 1.2;
+  text-align: center;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.total-amount {
+  font-size: 28px;
+  font-weight: bold;
+  color: #e74c3c;
+}
+
+.countdown {
+  font-size: 14px;
+  color: #ff5722;
+}
+
+.qr-code img {
+  width: 220px;
+  height: 220px;
+}
+
+/* Cột thông tin khách hàng */
+.right-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Các khung nhỏ */
+.customer-info,
+.trip-info,
+.price-details {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+}
+
+/* Tiêu đề của từng khung */
+.customer-info h3,
+.trip-info h3,
+.price-details h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Biểu tượng thông tin */
+h3::after {
+  content: "ℹ️";
+  font-size: 16px;
+  color: #ff5722;
+}
+
+/* Định dạng nội dung */
+.info-container p,
+.price-details p {
+  font-size: 16px;
+  margin: 5px 0;
+}
+
+.info-container span,
+.price-details span {
+  font-weight: bold;
+  color: #333;
+}
+
+/* Cảnh báo màu đỏ */
+.warning {
+  color: red;
+  font-weight: bold;
+}
+
+/* Giá tiền nổi bật */
+.highlight {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+/* Khu vực chứa nút thanh toán */
+.payment-actions {
+  text-align: center;
+  margin-top: 20px;
+}
+
+#success-button {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+#success-button:hover {
+  background: #218838;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .content-wrapper {
+    flex-direction: column;
+  }
+
+  .right-column {
+    width: 100%;
+  }
+}

@@ -1,0 +1,192 @@
+/* ============================= */
+/* 🔍 Cải tiến giao diện tìm kiếm địa điểm */
+/* ============================= */
+
+.inline-group {
+    position: relative;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+/* Dropdown chứa danh sách địa điểm */
+.dropdown-location {
+    display: none;
+    position: absolute;
+    width: 100%;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    max-height: 250px;
+    overflow: hidden; /* Ẩn mọi thanh cuộn bên ngoài */
+    z-index: 1000;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Ô tìm kiếm trong dropdown */
+.search-box {
+    width: calc(100% - 20px);
+    margin: 10px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    outline: none;
+    font-size: 1rem;
+    display: block;
+}
+
+/* Danh sách địa điểm */
+.location-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 200px;
+    overflow-y: auto; /* Chỉ cuộn dọc */
+    overflow-x: hidden; /* Ẩn cuộn ngang */
+    padding-right: 5px; /* Giữ khoảng cách với thanh cuộn */
+    padding-bottom: 10px;
+}
+
+/* Ẩn thanh cuộn bên ngoài */
+html, body {
+    overflow-x: hidden !important; /* Ẩn thanh cuộn ngang toàn trang */
+}
+
+/* Thiết kế danh sách địa điểm */
+.location-list li {
+    padding: 12px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.2s ease-in-out;
+    white-space: nowrap; /* Giữ chữ trên một dòng */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.location-list li:last-child {
+    margin-bottom: 10px; /* Đảm bảo item cuối không bị che mất */
+}
+.location-list li:hover {
+    background: #f0f0f0;
+}
+
+/* Tùy chỉnh thanh cuộn nhỏ bên trong */
+.location-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.location-list::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 6px;
+}
+
+.location-list::-webkit-scrollbar-thumb:hover {
+    background: #aaa;
+}
+
+/* Tùy chỉnh ô input tìm kiếm */
+input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+    transition: all 0.3s ease-in-out;
+}
+
+input[type="text"]:focus {
+    border-color: #ff6f61;
+    box-shadow: 0 0 5px rgba(255, 111, 97, 0.5);
+}
+
+/* ============================= */
+/* 🎫 Cải tiến giao diện danh sách chuyến xe */
+/* ============================= */
+
+.trip-results {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-top: 20px;
+}
+
+.trip-item {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+    transition: transform 0.2s ease-in-out;
+}
+
+.trip-item:hover {
+    transform: translateY(-5px);
+}
+
+.trip-container {
+    padding: 20px;
+}
+
+.trip-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f9f9f9;
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.trip-time {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.trip-duration {
+    font-size: 0.9rem;
+    color: #777;
+}
+
+.trip-body {
+    padding: 15px 0;
+}
+
+.trip-location {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #ff6f61;
+    margin-bottom: 5px;
+}
+
+.trip-info {
+    color: #555;
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+}
+
+.trip-price {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #28a745;
+}
+
+/* Nút chọn chuyến xe */
+.select-trip {
+    display: block;
+    width: 150px;
+    margin: 10px auto 0;
+    padding: 10px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background 0.3s ease-in-out;
+}
+
+.select-trip:hover {
+    background: #218838;
+}
+

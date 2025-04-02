@@ -1,0 +1,24 @@
+extends layouts/layout
+block head
+    link(rel="stylesheet" href="/css/tintuc.css") 
+block content  
+    main.container
+        h2.section-title Tin tức nổi bật
+        section.news-grid
+            .news-featured
+                img(src="/images/news-main.jpg" alt="Tin tức nổi bật")
+                h3: a(href="/tintuc/1") FUTA ĐỒNG HÀNH CÙNG SHB - X3 QUÀ TẶNG
+                p 14:35 26/07/2023
+            .news-list
+                article.news-item
+                    img(src="/images/pt1.png" alt="Tin tức 1")
+                    h3: a(href="/tintuc/2") Công ty Phương Trang khai trương tuyến mới
+                    p 08:22 17/02/2025
+                article.news-item
+                    img(src="/images/pt2.png" alt="Tin tức 2")
+                    h3: a(href="/tintuc/3") Nhập mã FUTA100 - Giảm 15% cho khách hàng mới
+                    p 09:33 13/02/2025
+                article.news-item
+                    img(src="/images/news3.jpg" alt="Tin tức 3")
+                    h3: a(href="/tintuc/4") Bến xe Thanh Phú khai trương tuyến mới
+                    p 15:24 12/02/2025

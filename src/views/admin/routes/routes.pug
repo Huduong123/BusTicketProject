@@ -1,0 +1,108 @@
+extends ../../layouts/layoutAdmin
+
+block content
+  .container
+    h2.text-center.my-4 Quản lý Tuyến Xe
+
+    // Form tìm kiếm nâng cao
+    form(action="/admins/routes/search" method="GET" class="row g-3 mb-4")
+      .col-md-3
+        label.form-label(for="departure") Địa điểm đi
+        select.form-select(name="departure" id="departure")
+          option(value="") -- Chọn điểm đi --
+          each location in locations
+            option(value=location.name_location selected=(departure === location.name_location ? "selected" : undefined))= location.name_location
+
+      .col-md-3
+        label.form-label(for="destination") Địa điểm đến
+        select.form-select(name="destination" id="destination")
+          option(value="") -- Chọn điểm đến --
+          each location in locations
+            option(value=location.name_location selected=(destination === location.name_location ? "selected" : undefined))= location.name_location
+
+      .col-md-3
+        label.form-label(for="busType") Loại xe
+        select.form-select(name="busType" id="busType")
+          option(value="") -- Chọn loại xe --
+          option(value="Xe giường nằm" selected=(busType === 'Xe giường nằm' ? 'selected' : undefined)) Xe giường nằm
+          option(value="Xe ghế ngồi" selected=(busType === 'Xe ghế ngồi' ? 'selected' : undefined)) Xe ghế ngồi
+          option(value="Xe limousine" selected=(busType === 'Xe limousine' ? 'selected' : undefined)) Xe limousine
+
+      .col-md-3
+        label.form-label(for="ticketPrice") Giá vé tối đa
+        input.form-control(type="number" name="ticketPrice" id="ticketPrice" value=(ticketPrice || ""))
+
+      .col-md-3
+        label.form-label(for="dailyTripCount") Số chuyến mỗi ngày
+        input.form-control(type="number" name="dailyTripCount" id="dailyTripCount" value=(dailyTripCount || ""))
+
+      .col-md-3
+        label.form-label(for="status") Trạng thái
+        select.form-select(name="status" id="status")
+          option(value="") -- Chọn trạng thái --
+          option(value="1" selected=(status === '1' ? 'selected' : undefined)) Hoạt động
+          option(value="0" selected=(status === '0' ? 'selected' : undefined)) Ngừng
+
+      .col-md-3
+        label.form-label(for="createdAt") Ngày tạo
+        input.form-control(type="date" name="createdAt" id="createdAt" value=(createdAt || ""))
+
+      .col-12.text-center
+        button.btn.btn-primary(type="submit") Tìm kiếm
+        a.btn.btn-secondary(href="/admins/routes") Reset
+
+    // ✅ Hiển thị mô tả tìm kiếm nếu có
+    if searchDescription
+      .alert.alert-info.d-flex.justify-content-between.align-items-center(role="alert")
+        span= searchDescription
+        button.btn.btn-sm.btn-outline-danger(onclick="window.location.href='/admins/routes'") X
+
+    table.table.table-bordered.table-hover
+      thead.table-dark
+        tr
+          th STT
+          th Địa điểm đi
+          th Địa điểm đến
+          th Quãng đường
+          th Thời gian di chuyển
+          th Loại xe
+          th Giá vé
+          th Số chuyến mỗi ngày
+          th Giờ khởi hành
+          th Tự động tạo chuyến?
+          th Trạng thái
+          th Ngày tạo
+          th Ngày cập nhật
+          th Hành động
+      tbody
+        if routes.length
+          each route, index in routes
+            - let timeParts = route.travel_time.split(':')
+            - let hours = parseInt(timeParts[0])
+            - let minutes = parseInt(timeParts[1])
+            - let formattedTime = hours > 0 ? `${hours} giờ ${minutes} phút` : `${minutes} phút`
+            tr
+              td= index + 1
+              td= route.departure_location
+              td= route.destination_location
+              td= route.distance + ' km'
+              td= formattedTime
+              td= route.bus_type
+              td= route.ticket_price.toLocaleString('vi-VN') + ' đ'
+              td= route.daily_trip_count
+              td= JSON.parse(route.departure_times || '[]').join(', ')
+              td= route.auto_generate_trips ? 'Có' : 'Không'
+              td= route.active ? 'Hoạt động' : 'Ngừng'
+              td= new Date(route.created_at).toLocaleString('vi-VN')
+              td= new Date(route.updated_at).toLocaleString('vi-VN')
+              td
+                .d-flex.gap-2
+                  a.btn.btn-warning.btn-sm(href=`/admins/routes/update/${route.id}`) Sửa
+                  form(action=`/admins/routes/delete/${route.id}`, method="POST", class="d-inline")
+                    button.btn.btn-danger.btn-sm(type="submit" onclick="return confirm('Bạn có chắc muốn xóa tuyến này?')") Xóa
+        else
+          tr
+            td.text-center(colspan="15") Không tìm thấy tuyến nào.
+
+    .text-center.mt-4
+      a.btn.btn-success(href="/admins/routes/addroutes") Thêm tuyến xe mới

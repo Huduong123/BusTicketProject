@@ -1,0 +1,55 @@
+extends layouts/layout
+
+block head
+  link(rel="stylesheet", href="/css/thanhtoan.css")
+
+block content
+  .container
+    .header-thanhtoan
+      h1 Vé xe đã mua thành công!
+      p(style="margin-top: 4px") FUTA Bus Lines đã gửi thông tin về vé đến địa chỉ email #{successData.customer_email_masked}
+
+    .content-wrapper
+      // Cột giữa: QR Code và Mã vé
+      .payment-summary
+        h2(style="color: #2ecc71") ✅ Thanh toán thành công
+        p Tổng giá vé: 
+          span.total-amount #{successData.total_price_ticket ? successData.total_price_ticket.toLocaleString() : ''}đ
+        p Phương thức thanh toán: #{successData.payment_method}
+        p Trạng thái thanh toán: #{successData.payment_status}
+        hr
+        p Mã hóa đơn: #{successData.ma_hoa_don}
+        p Mã vé: #{successData.ticket_code}
+        .qr-code
+          img(src="/images/qrcodeTA.png", alt="Mã QR vé")
+
+      // Cột phải: Thông tin vé chi tiết
+      .right-column
+        .info-container
+          .customer-info
+            h3 Thông tin hành khách
+            p Họ và tên: #{successData.customer_name}
+            p Số điện thoại: #{successData.customer_phone_masked}
+            p Email: #{successData.customer_email_masked}
+
+
+          .trip-info
+            h3 Thông tin chuyến đi
+            p Tuyến xe: #{successData.tuyen_xe}
+            p Thời gian khởi hành: #{new Date(successData.departure_time).toLocaleString('vi-VN')}
+            p Số ghế: #{successData.seat_numbers}
+            p Điểm lên xe: #{successData.pickup_location}
+            p Điểm trả khách: #{successData.dropoff_location}
+            p Biển số xe: #{successData.license_plate}
+
+          .price-details
+            h3 Chi tiết giá vé
+            p Giá vé: 
+              span.highlight #{successData.ticket_price ? successData.ticket_price.toLocaleString() : ''}đ
+            p Phí thanh toán: 0đ
+            p Tổng cộng: 
+              span.highlight #{successData.total_price_ticket ? successData.total_price_ticket.toLocaleString() : ''}đ
+
+    .payment-actions
+      a(href="/tracuuve")
+        button#success-button Xem các vé đã mua

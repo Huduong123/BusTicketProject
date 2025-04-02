@@ -1,0 +1,61 @@
+extends layouts/layout
+
+block head
+    link(rel="stylesheet" href="/css/thanhtoan.css")
+    script(src="/js/thanhtoan.js")
+
+block content
+  .container
+    .header-thanhtoan
+      h1#trip-name Chuyến đi đang tải...
+      p#trip_date Đang tải...
+
+    .content-wrapper
+      // Cột bên trái: Phương thức thanh toán
+      .payment-methods
+        h2 Chọn phương thức thanh toán
+        each method in ['ZaloPay', 'ShopeePay', 'MOMO', 'VNPAY', 'ViettelMoney', 'VietQR']
+          label.method
+            input(type="radio" name="payment")
+            img(src=`/images/${method.toLowerCase().replace(' ', '')}.png` alt=method)
+            span #{method}
+
+      // Cột giữa: Tổng thanh toán và QR Code
+      .payment-summary
+        .total-amount
+          h2 Tổng thanh toán: 
+          span.price#total-price Đang tải...
+        .qr-code
+          img(src="/images/qrcodeTA.png" alt="QR Code")
+        .payment-instructions
+          h3 Hướng dẫn thanh toán
+          ol
+            li Mở ứng dụng thanh toán trên điện thoại
+            li Dùng biểu tượng 📷 để quét mã QR
+            li Quét mã và thanh toán
+
+      // Cột bên phải: Thông tin hành khách & chuyến đi
+      .right-column
+        .info-container
+          .customer-info
+            h3 Thông tin hành khách
+            p#customer-name Họ và tên: Đang tải...
+            p#customer-phone Số điện thoại: Đang tải...
+            p#customer-email Email: Đang tải...
+          .trip-info
+            h3 Thông tin chuyến xe
+            p#route-info Tuyến xe: Đang tải...
+            p#departure-time Thời gian xuất bến: Đang tải...
+            p#seat-count Số lượng ghế: Đang tải...
+            p#seat-info Ghế đã chọn: Đang tải...
+            p#pickup-location Điểm lên xe: Đang tải...
+            p#dropoff-location Điểm trả khách: Đang tải...
+          .price-details
+            h3 Chi tiết giá
+            p#ticket-price Giá vé : Đang tải...
+            p Phí thanh toán: 0đ
+            p#total-price-ticket Tổng tiền: Đang tải...
+
+    // Khu vực chứa nút thanh toán
+    .payment-actions
+      button#pay-now(type="button") Thanh toán

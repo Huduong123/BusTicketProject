@@ -1,0 +1,30 @@
+extends ../../layouts/layoutAdmin
+
+block content
+  .container.mt-4
+    h2.text-center.mb-4 Sửa thông tin người dùng
+
+    form(action=`/admins/users/edit/${user.id}`, method="POST")
+      .mb-3
+        label.form-label(for="username") Tên đăng nhập
+        input.form-control(type="text", id="username", name="username", value=user.username readonly)
+
+      .mb-3
+        label.form-label(for="full_name") Họ tên
+        input.form-control(type="text", id="full_name", name="full_name", required value=user.full_name)
+
+      .mb-3
+        label.form-label(for="email") Email
+        input.form-control(type="email", id="email", name="email", required value=user.email)
+
+      .mb-3
+        label.form-label(for="phone") SĐT
+        input.form-control(type="text", id="phone", name="phone", required value=user.phone)
+
+      .mb-3
+        label.form-label(for="password") Mật khẩu mới (nếu muốn đổi)
+        input.form-control(type="password", id="password", name="password")
+
+      .text-end
+        button.btn.btn-primary(type="submit") Cập nhật
+        a.btn.btn-secondary(href="/admins/users") Hủy

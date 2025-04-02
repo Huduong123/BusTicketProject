@@ -1,0 +1,41 @@
+extends ../layouts/layoutAdmin
+
+block content
+  h2 Quản lý Vé Đặt
+  form(action="/admin/tickets/search" method="GET")
+    input(type="text" name="query" placeholder="Tìm kiếm vé")
+    select(name="status")
+      option(value="all") Tất cả
+      option(value="paid") Đã thanh toán
+      option(value="unpaid") Chưa thanh toán
+      option(value="cancelled") Đã hủy
+      option(value="completed") Hoàn thành
+    button(type="submit") Lọc
+
+  table
+    thead
+      tr
+        th Mã vé
+        th Họ tên khách
+        th Số điện thoại
+        th Chuyến xe
+        th Ghế ngồi
+        th Giá vé
+        th Thời gian đặt
+        th Trạng thái thanh toán
+        th Hành động
+    tbody
+      tr
+        td #12345
+        td Nguyễn Văn A
+        td 0123456789
+        td Hà Nội - Hải Phòng
+        td A1
+        td 200,000 VNĐ
+        td 07/03/2025
+        td Đã thanh toán
+        td
+          button Sửa
+          button Hủy vé
+
+  a(href="/admin/tickets/add") Thêm vé mới

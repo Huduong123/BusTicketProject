@@ -1,0 +1,33 @@
+doctype html
+html(lang="vi")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title Đăng nhập Garena
+    link(rel="stylesheet", href="/css/dangnhap.css")
+  body
+    header
+      .logo
+        a(href="/") 
+            img(src="/images/logo.png", alt="Logo")
+    .container
+      .login-box
+        h2 Đăng nhập
+        form(action="#" method="POST")
+          .input-group
+            label(for="username") Tên đăng nhập
+            input#username(type="text" name="username" placeholder="Nhập tên đăng nhập")
+          .input-group
+            label(for="password") Mật khẩu
+            input#password(type="password" name="password" placeholder="Nhập mật khẩu")
+          .forgot-password
+            a(href="#") Quên mật khẩu?
+          button(type="submit").login-btn Đăng Nhập Ngay
+          .register
+            a(href="/register")
+              button(type="button").register-btn Tạo tài khoản mới
+        .footer
+          a(href="#") Điều Khoản Dịch Vụ 
+          |  và  
+          a(href="#") Chính Sách Bảo Mật
+    include footer.pug

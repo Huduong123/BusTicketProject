@@ -1,0 +1,40 @@
+extends ../../layouts/layoutAdmin
+
+block content
+  .container.mt-4
+    h2.text-center.mb-4 Sửa thông tin vé
+
+    form#updateTicketForm(data-ticket-id=ticket.id data-expected-seats=ticket.seat_numbers.length)
+      .mb-3
+        label.form-label(for="customer_name") Tên khách hàng
+        input.form-control(type="text", id="customer_name", name="customer_name", required value=ticket.customer_name)
+
+      .mb-3
+        label.form-label(for="customer_phone") Số điện thoại
+        input.form-control(type="text", id="customer_phone", name="customer_phone", required value=ticket.customer_phone)
+
+      .mb-3
+        label.form-label Ghế đã chọn
+        #selectedSeats
+          each seat in ticket.seat_numbers
+            span.badge.bg-primary.mx-1.selected-seat(data-seat=seat)
+              | #{seat} 
+              span.text-white.fw-bold.ms-1(style="cursor:pointer" onclick="removeSeat(this)") &times;
+
+      .mb-3
+        button.btn.btn-sm.btn-outline-primary(type="button", onclick="showSeatSelector()") Chọn lại ghế
+
+      .mb-3#seatSelector(style="display:none;")
+        label.form-label Danh sách ghế khả dụng
+        select.form-select(id="availableSeats", multiple)
+          each seat in seats
+            - const isBooked = seat.status === 'BOOKED';
+            - const isPending = seat.status === 'PENDING';
+            - const isSelected = ticket.seat_numbers.includes(seat.seat_number);
+            if (!isBooked && !isPending && !isSelected)
+              option(value=seat.seat_number)= seat.seat_number
+
+      button.btn.btn-success.mt-3(type="submit") Cập nhật
+      a.btn.btn-secondary.ms-2(href="/admins/tickets") Hủy
+
+    script(src="/js/admin/updatetickets.js")

@@ -1,0 +1,132 @@
+extends ../../layouts/layoutAdmin
+
+block content
+  .container.mt-4
+    h2.text-center.mb-4 Quản lý Chuyến Xe
+
+    // Form tìm kiếm với nhiều tiêu chí
+    form(action="/admins/trips/search" method="GET" class="mb-3 row g-2")
+      .col-md-3
+        label.form-label(for="departure_location") Điểm đi
+        select.form-select#departure_location(name="departure_location")
+          option(value="") -- Chọn điểm đi --
+          if locations && locations.length
+            each location in locations
+              option(value=location.name_location) #{location.name_location}
+
+      .col-md-3
+        label.form-label(for="destination_location") Điểm đến
+        select.form-select#destination_location(name="destination_location")
+          option(value="") -- Chọn điểm đến --
+          if locations && locations.length
+            each location in locations
+              option(value=location.name_location) #{location.name_location}
+
+      .col-md-3
+        label.form-label(for="route_id") Tuyến xe
+        select.form-select(name="route_id")
+          option(value="") -- Chọn tuyến xe --
+          each route in routes
+            option(value=route.id) #{route.departure_location} - #{route.destination_location}
+
+      .col-md-3
+        label.form-label(for="departure_time") Thời gian khởi hành
+        input.form-control(type="date" name="departure_time")
+
+      .col-md-3
+        label.form-label(for="estimated_arrival_time") Thời gian đến
+        input.form-control(type="date" name="estimated_arrival_time")
+
+      .col-md-3
+        label.form-label(for="status") Trạng thái
+        select.form-select(name="status")
+          option(value="") -- Chọn trạng thái --
+          option(value="ON_TIME") Hoạt động
+          option(value="DELAYED") Trễ
+
+      .col-md-3.d-flex.align-items-end
+        button.btn.btn-primary.w-100(type="submit")
+          i.bi.bi-search
+          |  Tìm kiếm
+
+    // Hiển thị thông tin tìm kiếm nếu có
+    if searchDescription
+      .alert.alert-info.d-flex.justify-content-between.align-items-center.mt-2(role="alert")
+        span= searchDescription
+        button.btn.btn-sm.btn-outline-danger(onclick="clearSearch()") X
+
+    .table-responsive
+      table.table.table-bordered.table-hover
+        thead.table-dark
+          tr
+            th STT
+            th Địa điểm đi
+            th Địa điểm đến
+            th Tuyến xe
+            th Quãng đường (km)
+            th Loại xe
+            th Thời gian khởi hành
+            th Thời gian đến
+            th Giá vé
+            th Điểm đón
+            th Điểm trả
+            th Trạng thái
+            th Ngày tạo
+            th Ngày cập nhật
+            th Hành động
+        tbody
+          if trips && trips.length
+            each trip, index in trips
+              tr
+                td= index + 1
+                td= trip['Điểm đi']
+                td= trip['Điểm đến']
+                td= trip['Tuyến xe']
+                td= `${trip['Quãng đường (km)']} Km`
+                td= trip['Loại xe']
+                td= new Date(trip['Thời gian khởi hành']).toLocaleString('vi-VN')
+                td= new Date(trip['Thời gian đến']).toLocaleString('vi-VN')
+                td= trip['Giá vé'].toLocaleString('vi-VN') + 'đ'
+                td= trip['Điểm đón'] || '---'
+                td= trip['Điểm trả'] || '---'
+                td= trip['Trạng thái']
+                td= new Date(trip['Ngày tạo']).toLocaleDateString('vi-VN')
+                td= new Date(trip['Ngày cập nhật']).toLocaleDateString('vi-VN')
+                td
+                  .d-flex.justify-content-center
+                    a.btn.btn-warning.btn-sm.me-2(href=`/admins/trips/update/${trip.id}`)
+                      i.bi.bi-pencil-fill
+                      |  Sửa
+                    form(action=`/admins/trips/delete/${trip.id}`, method="POST", class="d-inline")
+                      button.btn.btn-danger.btn-sm(type="submit" onclick="return confirm('Bạn có chắc muốn xóa chuyến xe này?')")
+                        i.bi.bi-trash-fill
+                        |  Xóa
+          else
+            tr
+              td.text-center(colspan="12") Không có chuyến xe nào.
+
+    // Nút thêm chuyến xe mới
+    .text-center.mt-3
+      a.btn.btn-success(href="/admins/trips/addtrips")
+        i.bi.bi-plus-circle
+        |  Thêm chuyến xe mới
+    if totalPages && totalPages > 1
+      nav.mt-3
+        ul.pagination.justify-content-center
+          if currentPage > 1
+            li.page-item
+              a.page-link(href=`?page=${currentPage - 1}`) Trước
+
+          each i in Array(totalPages).fill().map((_, idx) => idx + 1)
+            li.page-item(class=(i === currentPage ? "active" : ""))
+              a.page-link(href=`?page=${i}`) #{i}
+
+          if currentPage < totalPages
+            li.page-item
+              a.page-link(href=`?page=${currentPage + 1}`) Tiếp theo
+
+  // JavaScript để reload trang khi nhấn nút "X"
+  script.
+    function clearSearch() {
+      window.location.href = "/admins/trips"; 
+    }

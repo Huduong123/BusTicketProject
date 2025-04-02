@@ -1,0 +1,84 @@
+extends ../../layouts/layoutAdmin
+
+block head
+  link(rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css")
+
+block content
+  .container.mt-4
+    .card.shadow-lg.p-4.bg-white.rounded
+      h2.text-center.text-primary.mb-4 Thêm Tuyến Xe
+
+      // Hiển thị thông báo lỗi
+      #messageBox.alert.alert-dismissible.fade.show(role="alert", style="display: none;")
+        span#messageText
+        button.btn-close(type="button" data-bs-dismiss="alert" aria-label="Close")
+
+      form#addRouteForm(action="/admins/routes/" method="POST")
+        .mb-3
+          label.form-label(for="departure_location") Địa điểm đi:
+          select.form-select#departure_location(name="departure_location" required)
+            option(value="") -- Chọn điểm đi --
+            each location in locations
+              option(value=location.name_location) #{location.name_location}
+        
+        .mb-3
+          label.form-label(for="destination_location") Địa điểm đến:
+          select.form-select#destination_location(name="destination_location" required)
+            option(value="") -- Chọn điểm đến --
+            each location in locations
+              option(value=location.name_location) #{location.name_location}
+        
+        .mb-3
+          label.form-label(for="distance") Quãng đường (km):
+          input.form-control#distance(type="number" name="distance" required min="1" placeholder="Nhập quãng đường (km)")
+
+        .mb-3
+          label.form-label Thời gian di chuyển:
+          .row
+            .col-md-6
+              select.form-select#travel_hours(name="travel_hours" required)
+                option(value="") -- Chọn giờ --
+                - for (let i = 0; i <= 23; i++)
+                  option(value=i)= `${i} giờ`
+            .col-md-6
+              select.form-select#travel_minutes(name="travel_minutes" required)
+                option(value="") -- Chọn phút --
+                - for (let i = 0; i <= 59; i += 5)
+                  option(value=i)= `${i} phút`
+
+        .mb-3
+          label.form-label(for="bus_type") Loại xe:
+          select.form-select#bus_type(name="bus_type" required)
+            option(value="") -- Vui lòng chọn --
+            option(value="Xe giường nằm") Xe giường nằm
+            option(value="Xe limousine") Xe limousine
+            option(value="Xe ghế ngồi") Xe ghế ngồi
+
+        // Vùng chọn các chuyến (nhiều giờ khởi hành + bus_id)
+        .mb-3
+          label.form-label Các chuyến xe mỗi ngày:
+          #trip-container
+          button.btn.btn-outline-primary.mt-2#add-trip-btn(type="button") Thêm chuyến
+
+          // Hidden input để submit dữ liệu JSON
+          input(type="hidden" name="departure_times" id="departure_times")
+          input(type="hidden" name="bus_ids" id="bus_ids")
+        .mb-3
+          label.form-label(for="pickup_location") Điểm đón mặc định:
+          input.form-control#pickup_location(type="text" name="pickup_location" required placeholder="VD: Sân bay HCM")
+
+        .mb-3
+          label.form-label(for="dropoff_location") Điểm trả mặc định:
+          input.form-control#dropoff_location(type="text" name="dropoff_location" required placeholder="VD: Sân bay Bình Định")
+        .mb-3
+          label.form-label(for="ticket_price") Giá vé (VNĐ):
+          input.form-control#ticket_price(type="number" name="ticket_price" required min="10000" step="1000" placeholder="Nhập giá vé (VNĐ)")
+
+        .d-flex.justify-content-center.mt-4
+          button.btn.btn-primary.btn-lg(type="submit") Thêm Tuyến Xe
+          a.btn.btn-secondary.btn-lg.ms-3(href="/admins/routes") Hủy
+
+    script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js")
+    script(src="/js/admin/addroutes.js")
+    script.
+      window.allBuses = !{JSON.stringify(buses)};

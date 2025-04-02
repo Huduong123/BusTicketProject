@@ -1,0 +1,107 @@
+body {
+    background-color: #fffdfa; /* Cam nhạt */
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    padding-bottom: 20px;
+}
+
+/* Container chính */
+.container {
+    background-color: #ffffff; /* Trắng */
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: 40px auto;
+    text-align: center;
+    padding-top: 30px;
+    padding-bottom: 80px;
+}
+
+/* Tiêu đề */
+h2, .search-title {
+    color: #ff6600; /* Cam đậm */
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* Nhãn */
+label {
+    color: #cc5500; /* Cam tối hơn */
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+/* Input và Select */
+select, input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ffcc99; /* Viền cam nhạt */
+    border-radius: 5px;
+    margin-bottom: 15px;
+    background-color: #f9f8f6; /* Trắng hơi cam nhẹ */
+    font-size: 16px;
+}
+
+/* Nút tra cứu */
+button, .search-button {
+    width: 50%; /* Giảm chiều rộng xuống 50% */
+    padding: 10px; /* Giảm padding để nút nhỏ hơn */
+    background-color: #ff6600;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px; /* Giảm font-size */
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s;
+    font-weight: bold;
+
+}
+
+
+button:hover, .search-button:hover {
+    background-color: #ff4500; /* Cam sáng hơn khi hover */
+
+}
+
+/* 🟢 Thanh điều hướng */
+.navbar {
+    background: #ff6600;
+    padding: 15px 0;
+    text-align: center;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    justify-content: center; /* Căn giữa các mục */
+    padding: 0;
+    margin: 0;
+}
+
+.nav-links li {
+    margin: 0 20px; /* Tạo khoảng cách giữa các mục */
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 18px;
+    padding: 10px 15px;
+}
+
+.nav-links a:hover {
+    border-bottom: 3px solid white;
+}
+.search-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Căn giữa nút */
+}
+

@@ -1,0 +1,67 @@
+extends layouts/layout
+block head
+    link(rel="stylesheet" href="/css/lichtrinh.css")
+block content
+    .content
+        h1 Lịch trình xe khách
+        .search-section
+          form(action="/lichtrinh" method="GET")
+            .inline-group
+              label(for="departure_location") Nhập điểm đi
+              input(type="text" name="departure_location" id="departure_location" placeholder="Nhập điểm đi" oninput="filterTable()")
+            .inline-group
+              label(for="destination_location") Nhập điểm đến
+              input(type="text" name="destination_location" id="destination_location" placeholder="Nhập điểm đến" oninput="filterTable()")
+        if message
+          p.alert #{message}
+        .schedule-table
+          table
+            thead
+              tr
+                th Tuyến xe
+                th Loại xe
+                th Quảng đường
+                th Thời gian hành trình
+                th Giá vé
+                th
+            tbody
+               if schedules && schedules.length
+                each schedule in schedules
+                  - var travelTimeParts = schedule.travel_time.split(":");
+                  - var hours = parseInt(travelTimeParts[0], 10);
+                  - var minutes = parseInt(travelTimeParts[1], 10);
+                  - var formattedTravelTime = (hours > 0 ? hours + " giờ " : "") + (minutes > 0 ? minutes + " phút" : "");
+
+                  - var formattedPrice = schedule.ticket_price.toLocaleString('vi-VN') + " VNĐ";
+
+                  tr
+                    td #{schedule.departure_location} - #{schedule.destination_location}
+                    td #{schedule.bus_type}
+                    td #{schedule.distance} km
+                    td #{formattedTravelTime}
+                    td #{formattedPrice}
+                    td
+                      form(action="/lichtrinh/find-route" method="GET")
+                        input(type="hidden" name="departure_location" value=schedule.departure_location)
+                        input(type="hidden" name="destination_location" value=schedule.destination_location)
+                        button(type="submit") Tìm tuyến xe
+
+               else
+                tr
+                  td(colspan="6") Không có dữ liệu lịch trình
+
+    script.
+      function filterTable() {
+        let departureInput = document.getElementById("departure_location").value.toLowerCase();
+        let destinationInput = document.getElementById("destination_location").value.toLowerCase();
+        let rows = document.querySelectorAll(".schedule-table tbody tr");
+
+        rows.forEach(row => {
+          let routeText = row.cells[0]?.textContent.toLowerCase() || "";
+          if (routeText.includes(departureInput) && routeText.includes(destinationInput)) {
+            row.style.display = "";
+          } else {
+            row.style.display = "none";
+          }
+        });
+      }

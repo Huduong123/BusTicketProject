@@ -1,0 +1,410 @@
+/* Reset mặc định */
+body {
+  font-family: 'Roboto', sans-serif;
+  background: #f0f4f8;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Container chính */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Header */
+.header-datve {
+  text-align: center;
+  margin-bottom: 10px;
+  background: #ff6600; /* Màu cam chuyển sắc */
+  padding: 10px;
+  border-radius: 12px;
+}
+
+.header-datve h1 {
+  font-size: 32px;
+  color: #0c0a0a; /* Chữ màu trắng */
+  /* font-weight: bold; */
+  margin: 0;
+}
+
+.header-dave p {
+  font-size: 18px;
+  color: #0c0a0a; /* Chữ màu trắng */
+  margin: 5px 0 0;
+}
+
+/* Bố cục chính */
+.booking-section {
+  display: flex;
+  gap: 30px;
+  margin-top: 20px;
+  justify-content: space-between;
+}
+
+/* Hộp chứa ghế và thông tin */
+.ticket-box {
+  display: flex;
+  width: 100%;
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Bố cục bên trái */
+.left-panel {
+  width: 65%;
+  padding-right: 20px;
+}
+
+/* Bố cục bên phải */
+.right-panel {
+  width: 30%;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Huyền thoại ghế */
+.seat-legend {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.seat-legend span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.seat-legend span::before {
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.sold::before {
+  background: #b0b0b0;
+}
+
+.available::before {
+  background: #cce5ff;
+}
+
+.selected::before {
+  background: #ffcccb;
+}
+
+/* ✅ Bố trí ghế: cập nhật cho tầng dưới bên trái và tầng trên bên phải */
+.seat-layout {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 15px;
+}
+
+/* Mỗi tầng đóng gói trong .floor */
+.seat-layout .floor {
+  width: 48%;
+}
+
+/* Các tiêu đề tầng */
+.floor p {
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+/* Cấu trúc ghế theo tầng */
+.seat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px 20px;
+  justify-items: center;
+  margin-bottom: 20px;
+}
+
+/* Kiểu ghế */
+label.seat {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background: #cce5ff;
+  border: 2px solid #007bff;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+label.seat.sold {
+  background: #b0b0b0 !important;
+  border-color: #999;
+  cursor: not-allowed;
+}
+
+label.seat.selected {
+  background: #ffcccb !important;
+  border-color: #ff5757;
+}
+
+/* Ẩn checkbox */
+label.seat input {
+  display: none;
+}
+
+/* Form đặt vé */
+form {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+label {
+  font-weight: bold;
+  display: block;
+  margin-top: 10px;
+}
+
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+/* Nút thanh toán */
+.btn-primary-thanhtoan {
+  background: #ff7e5f;
+  color: white;
+  padding: 15px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 18px;
+  transition: background 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: #ff5f3f;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .booking-section {
+    flex-direction: column;
+  }
+
+  .left-panel, .right-panel {
+    width: 100%;
+  }
+
+  .seat-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ================================================================= */
+/* Tách các khung riêng cho Thông tin lượt đi và Chi tiết vé */
+/* ================================================================= */
+.route-info,
+.ticket-info {
+  background: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.route-info h3,
+.ticket-info h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 20px;
+  color: #333;
+}
+
+/* ================================================================= */
+/* Style cho Thông tin khách hàng và Thông tin đón trả */
+/* ================================================================= */
+.customer-info,
+.station-info {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.customer-info h3,
+.station-info h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 20px;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.customer-info p {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.customer-info form label,
+.station-info label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.customer-info form input,
+.customer-info form select,
+.station-info select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.customer-info form input[type="checkbox"] {
+  width: auto;
+  margin-right: 5px;
+}
+/* ============================= */
+/* Style cho Thông tin khách hàng */
+/* ============================= */
+.customer-info {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+
+  /* Đặt font-size chung cho toàn bộ phần Thông tin khách hàng */
+  font-size: 14px; 
+  color: #333;
+  line-height: 1.5;
+}
+
+/* Tiêu đề chính "Thông tin khách hàng" */
+.customer-info h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 16px; /* Vừa phải, không quá to */
+  font-weight: bold;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+/* Bao bọc 2 cột: form (trái) và điều khoản (phải) */
+.customer-info .info-columns {
+  display: flex;
+  gap: 30px; /* Khoảng cách giữa 2 cột */
+  margin-top: 20px;
+}
+
+/* Cột trái chứa form */
+.customer-info .info-left {
+  flex-basis: 60%; /* Cho form rộng hơn một chút để cân đối */
+}
+
+/* Form trong cột trái */
+.customer-info .info-left form {
+  /* Giữ form gọn gàng, canh đều */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Giảm khoảng cách giữa label và input để gọn hơn */
+.customer-info .info-left form label {
+  margin-top: 8px;
+  margin-bottom: 5px;
+  font-weight: 500; /* Bớt đậm để chữ trông nhẹ hơn */
+  color: #333;
+}
+
+/* Các ô nhập liệu */
+.customer-info .info-left form input,
+.customer-info .info-left form select {
+  width: 100%;
+  padding: 8px; 
+  margin-bottom: 10px; 
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+  color: #333;
+}
+
+/* Checkbox điều khoản bên dưới form */
+.customer-info .info-left .terms-check {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.customer-info .info-left .terms-check input[type="checkbox"] {
+  width: auto;
+  margin: 0; 
+  cursor: pointer;
+}
+
+/* Cột phải chứa điều khoản */
+.customer-info .info-right {
+  flex-basis: 40%;
+  color: #666;
+  line-height: 1.6;
+}
+
+/* Tiêu đề "ĐIỀU KHOẢN & LƯU Ý" */
+.customer-info .info-right h4 {
+  margin: 0 0 10px;
+  color: #ff5f3f; 
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+/* Chỉnh khoảng cách cho các đoạn */
+.customer-info .info-right p {
+  margin: 0 0 10px;
+  text-align: justify; /* Nếu muốn canh đều hai bên */
+}
+
+/* ============================= */
+/* Responsive cho 2 cột (nếu cần) */
+/* ============================= */
+@media (max-width: 768px) {
+  .customer-info .info-columns {
+    flex-direction: column;
+  }
+  .customer-info .info-left,
+  .customer-info .info-right {
+    flex-basis: 100%;
+    margin-top: 15px;
+  }
+}

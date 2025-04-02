@@ -1,0 +1,145 @@
+/* Reset mặc định */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* Container chính */
+.contact-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Cột thông tin liên hệ */
+.contact-info {
+    flex: 1;
+    padding: 20px;
+    min-width: 350px;
+}
+
+.contact-info h2 {
+    color: #ff5722;
+    font-size: 24px;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.contact-info p {
+    font-size: 16px;
+    margin: 6px 0;
+    color: #333;
+}
+
+.contact-info a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.contact-info a:hover {
+    text-decoration: underline;
+}
+
+/* Form liên hệ */
+.contact-form {
+    flex: 1;
+    min-width: 350px;
+    padding: 20px;
+    background: #f8f8f8;
+    border-radius: 8px;
+}
+
+.contact-form h3 {
+    color: #ff5722;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.contact-form h3 i {
+    margin-right: 10px;
+    font-size: 22px;
+}
+
+/* Các nhóm input */
+.form-group, .form-row {
+    margin-bottom: 15px;
+}
+
+/* Cách dòng cho input */
+input, select, textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    background: #fff;
+}
+
+/* Cặp input theo hàng ngang */
+.form-row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.form-row input {
+    width: 48%;
+}
+
+textarea {
+    resize: none;
+}
+
+/* Hiệu ứng khi nhập vào input */
+input:focus, textarea:focus {
+    border-color: #ff5722;
+    outline: none;
+    box-shadow: 0px 0px 5px rgba(255, 102, 0, 0.5);
+}
+
+/* Nút gửi */
+.btn-submit {
+    background: linear-gradient(45deg, #ff5722, #e64a19);
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.3s ease;
+    width: 100%;
+    font-weight: bold;
+}
+
+.btn-submit:hover {
+    background: linear-gradient(45deg, #e64a19, #d84315);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .contact-container {
+        flex-direction: column;
+    }
+
+    .contact-info, .contact-form {
+        width: 100%;
+    }
+
+    .form-row {
+        flex-direction: column;
+    }
+
+    .form-row input {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}

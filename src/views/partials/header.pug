@@ -1,0 +1,79 @@
+.header
+  a(href="/") 
+    img(src="/images/logo.png" alt="FUTA Logo")
+  .nav
+    .nav-left
+      a(href="/") Trang chủ
+      a(href="/lichtrinh") Lịch trình
+      a(href="/tracuuve") Tra cứu vé
+      a(href="/tintuc") Tin tức
+      a(href="/lienhe") Liên hệ
+    .nav-right
+      if user
+        .dropdown
+          span#userDropdown Chào, #{user.full_name} ▼
+          .dropdown-menu
+            a(href="/account") Thông tin tài khoản
+            a(href="/history") Lịch sử mua vé
+            a(href="/address") Địa chỉ của bạn
+            a(href="/reset-password") Đặt lại mật khẩu
+            a(href="#" class="logout-link") Đăng xuất
+      else 
+        button.btn.btn-primary#openLoginModal Đăng nhập
+
+// Modal Đăng nhập
+div#loginModal.modal.fade(tabindex="-1" aria-hidden="true")
+  .modal-dialog.modal-dialog-centered
+    .modal-content
+      .modal-header
+        h5.modal-title.text-center Đăng nhập
+        button.btn-close(data-bs-dismiss="modal" aria-label="Close")
+      .modal-body
+        form(id="loginForm")
+          .mb-3
+            label.form-label(for="username") Tên đăng nhập
+            input.form-control(type="text" id="username" placeholder="Nhập tên đăng nhập" )
+          .mb-3
+            label.form-label(for="password") Mật khẩu
+            input.form-control(type="password" id="password" placeholder="Nhập mật khẩu" )
+          .d-flex.justify-content-between
+            a(href="/forgot-password" class="text-decoration-none") Quên mật khẩu?
+          button.btn.btn-primary.w-100.mt-3(type="submit") Đăng nhập
+      .modal-footer.justify-content-center
+        span Bạn chưa có tài khoản? 
+        button.btn.btn-link.text-primary.text-decoration-none#openRegisterModal Đăng ký ngay
+
+// Modal Đăng ký
+div#registerModal.modal.fade(tabindex="-1" aria-hidden="true")
+  .modal-dialog.modal-dialog-centered
+    .modal-content
+      .modal-header
+        h5.modal-title.text-center Đăng ký tài khoản
+        button.btn-close(data-bs-dismiss="modal" aria-label="Close")
+      .modal-body
+        form(id="registerForm")
+          .mb-2
+            label.form-label(for="fullname") Họ và tên
+            input.form-control(type="text" id="fullname" placeholder="Nhập họ và tên" )
+          .mb-2
+            label.form-label(for="usernameRegister") Tên đăng nhập
+            input.form-control(type="text" id="usernameRegister" placeholder="Nhập tên đăng nhập" )
+          .mb-2
+            label.form-label(for="phoneRegister") Số điện thoại
+            input.form-control(type="tel" id="phoneRegister" placeholder="Nhập số điện thoại" )
+          .mb-2
+            label.form-label(for="emailRegister") Email
+            input.form-control(type="tel" id="emailRegister" placeholder="Nhập email" )
+          .mb-2
+            label.form-label(for="passwordRegister") Mật khẩu
+            input.form-control(type="password" id="passwordRegister" placeholder="Nhập mật khẩu" )
+          .mb-2
+            label.form-label(for="confirmPassword") Xác nhận mật khẩu
+            input.form-control(type="password" id="confirmPassword" placeholder="Nhập lại mật khẩu" )
+          button.btn.btn-primary.w-100.mt-3(type="submit") Đăng ký
+      .modal-footer.justify-content-center
+        span Bạn đã có tài khoản? 
+        button.btn.btn-link.text-primary.text-decoration-none#backToLogin Đăng nhập
+
+
+script(src="/js/login.js")

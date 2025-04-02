@@ -1,0 +1,136 @@
+extends ../../layouts/layoutAdmin
+
+block head
+    link(rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css")
+    link(rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css")
+
+block content
+  .container.mt-4
+    .card.shadow-lg.p-4.bg-white.rounded
+      h2.text-center.text-primary.mb-4 Sửa Chuyến Xe
+
+      // Hiển thị thông báo
+      #messageBox.alert.alert-dismissible.fade.show(role="alert", style="display: none;")
+        span#messageText
+        button.btn-close(type="button" data-bs-dismiss="alert" aria-label="Close")
+
+      form#updateTripForm(action=`/admins/trips/${trip.id}?_method=PUT` method="POST")
+        input(type="hidden" name="_method" value="PUT")
+        input(type="hidden" name="trip_id" value=trip.id)
+
+        .mb-3
+          label.form-label(for="departure_location") Điểm đi:
+          select.form-select#departure_location(name="departure_location" required)
+            option(value="") -- Chọn điểm đi --
+            each location in locations
+              option(value=location.name_location selected=(trip.departure_location == location.name_location)) #{location.name_location}
+
+        .mb-3
+          label.form-label(for="destination_location") Điểm đến:
+          select.form-select#destination_location(name="destination_location" required)
+            option(value="") -- Chọn điểm đến --
+            each location in locations
+              option(value=location.name_location selected=(trip.destination_location == location.name_location)) #{location.name_location}
+
+        .mb-3
+          label.form-label(for="route_id") Tuyến xe:
+          select.form-select#route_id(name="route_id" required)
+            option(value="") -- Chọn tuyến xe --
+            each route in routes
+              option(value=route.id selected=(trip.route_id == route.id)) #{route.departure_location} - #{route.destination_location}
+
+        .mb-3
+          label.form-label(for="distance") Quãng đường (km):
+          input.form-control#distance(type="number" name="distance" required min="1" placeholder="Nhập quãng đường (km)" value=trip.distance)
+
+        .mb-3
+          label.form-label(for="bus_id") Loại xe:
+          select.form-select#bus_id(name="bus_id" required)
+            option(value="") -- Chọn loại xe --
+            each bus in buses
+              option(value=bus.id selected=(trip.bus_id == bus.id)) #{bus.bus_type} - #{bus.license_plate}
+
+        .mb-3
+          label.form-label(for="departure_time") Thời gian khởi hành:
+          input.form-control#departure_time(type="text" name="departure_time" required)
+
+        .mb-3
+          label.form-label(for="estimated_arrival_time") Thời gian đến:
+          input.form-control#estimated_arrival_time(type="text" name="estimated_arrival_time" required)
+
+        .mb-3
+          label.form-label(for="trip_price") Giá vé:
+          input.form-control#trip_price(type="number" name="trip_price" required min="1" placeholder="Nhập giá vé" value=trip.trip_price)
+
+        .mb-3
+          label.form-label(for="status") Trạng thái:
+          select.form-select#status(name="status" required)
+            option(value="") -- Chọn trạng thái --
+            option(value="ON_TIME" selected=(trip.status == "ON_TIME")) ON_TIME 
+            option(value="DELAYED" selected=(trip.status == "DELAYED")) DELAYED
+
+        .d-flex.justify-content-center.mt-4
+          button.btn.btn-primary.btn-lg(type="submit") Cập Nhật Chuyến Xe
+          a.btn.btn-secondary.btn-lg.ms-3(href="/admins/trips") Hủy
+
+    script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js")
+    script(src="https://cdn.jsdelivr.net/npm/flatpickr")
+    script.
+      document.addEventListener("DOMContentLoaded", function() {
+        function formatDateTime(inputDate) {
+          if (!inputDate) return "";
+          const date = new Date(inputDate);
+          if (isNaN(date.getTime())) return ""; // Nếu sai định dạng, trả về chuỗi rỗng
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, "0");
+          const day = String(date.getDate()).padStart(2, "0");
+          const hours = String(date.getHours()).padStart(2, "0");
+          const minutes = String(date.getMinutes()).padStart(2, "0");
+          return `${year}-${month}-${day} ${hours}:${minutes}`;
+        }
+
+        // Gán giá trị ngày giờ từ `trip`
+        let departureTime = formatDateTime("#{trip.departure_time}");
+        let arrivalTime = formatDateTime("#{trip.estimated_arrival_time}");
+
+        document.getElementById("departure_time").value = departureTime;
+        document.getElementById("estimated_arrival_time").value = arrivalTime;
+
+        // Kích hoạt Flatpickr để hiển thị lịch chọn thời gian
+        flatpickr("#departure_time", {
+            enableTime: true,
+            time_24hr: true,
+            dateFormat: "Y-m-d H:i",
+            defaultDate: departureTime
+        });
+
+        flatpickr("#estimated_arrival_time", {
+            enableTime: true,
+            time_24hr: true,
+            dateFormat: "Y-m-d H:i",
+            defaultDate: arrivalTime
+        });
+      });
+
+      document.getElementById('updateTripForm').addEventListener('submit', function(event) {
+        event.preventDefault();  // Ngăn form reload trang
+        const formData = new FormData(this);
+        const jsonData = Object.fromEntries(formData.entries());
+
+        console.log("📤 Dữ liệu gửi lên:", jsonData);
+
+        fetch(`/admins/trips/${jsonData.trip_id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(jsonData)
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.message.includes("thành công")) {
+            window.location.href = "/admins/trips";
+          } else {
+            alert(data.message);
+          }
+        })
+        .catch(error => console.error("❌ Lỗi gửi dữ liệu:", error));
+      });

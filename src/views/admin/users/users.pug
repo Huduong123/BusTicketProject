@@ -1,0 +1,68 @@
+extends ../../layouts/layoutAdmin
+
+block content
+  .container.mt-4
+    h2.text-center.mb-4 Quản lý Khách hàng
+
+    // 🔍 Form tìm kiếm
+    form(action="/admins/users/search", method="GET", class="row g-3 mb-4 border rounded p-3 bg-light")
+      .col-md-3
+        label.form-label(for="username") Tên đăng nhập
+        input.form-control(type="text", name="username", id="username", value=(username || ''))
+
+      .col-md-3
+        label.form-label(for="full_name") Họ tên
+        input.form-control(type="text", name="full_name", id="full_name", value=(full_name || ''))
+
+      .col-md-3
+        label.form-label(for="email") Email
+        input.form-control(type="email", name="email", id="email", value=(email || ''))
+
+      .col-md-3
+        label.form-label(for="phone") Số điện thoại
+        input.form-control(type="text", name="phone", id="phone", value=(phone || ''))
+
+      .col-md-3
+        label.form-label(for="created_at") Ngày tạo
+        input.form-control(type="date", name="created_at", id="created_at", value=(created_at || ''))
+
+      .col-12.text-center
+        button.btn.btn-primary(type="submit") Tìm kiếm
+        a.btn.btn-secondary.ms-2(href="/admins/users") Reset
+
+    // 🔘 Nút thêm người dùng
+    .text-end.mb-3
+      a.btn.btn-success(href="/admins/users/add") ➕ Thêm người dùng
+
+    // 📋 Bảng danh sách người dùng
+    .table-responsive
+      table.table.table-bordered.table-hover
+        thead.table-dark
+          tr
+            th STT
+            th Tên đăng nhập
+            th Họ tên
+            th Email
+            th SĐT
+            th Ngày tạo
+            th Ngày cập nhật
+            th Hành động
+        tbody
+          if users && users.length
+            each user, index in users
+              tr
+                td= index + 1
+                td= user.username
+                td= user.full_name || '-'
+                td= user.email || '-'
+                td= user.phone || '-'
+                td= new Date(user.created_at).toLocaleString('vi-VN')
+                td= new Date(user.updated_at).toLocaleString('vi-VN')
+                td
+                  .d-flex.gap-2
+                    a.btn.btn-warning.btn-sm(href=`/admins/users/edit/${user.id}`) Sửa
+                    form(action=`/admins/users/delete/${user.id}`, method="POST", class="d-inline")
+                      button.btn.btn-danger.btn-sm(type="submit" onclick="return confirm('Bạn có chắc muốn xóa người dùng này?')") Xóa
+          else
+            tr
+              td.text-center(colspan="8") Không có người dùng nào.
