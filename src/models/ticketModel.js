@@ -7,16 +7,14 @@ const getAllTicket = async () => {
 };
 const getAllTicketsWithTripName = async () => {
     const sql = `
-        SELECT 
-            tk.*, 
-            CONCAT(t.departure_location, ' → ', t.destination_location) AS trip_name
-        FROM tickets tk
-        LEFT JOIN trips t ON tk.trip_id = t.id
-        ORDER BY tk.booking_time ASC
+      SELECT *
+      FROM tickets
+      ORDER BY booking_time ASC
     `;
     const [rows] = await pool.execute(sql);
     return rows;
-};
+  };
+  
 
 const getTicketById = async (id) => {
     const sql = 'SELECT * FROM tickets WHERE id = ?';
@@ -27,52 +25,124 @@ const getTicketById = async (id) => {
 const generateTicketCode = () => {
     return `TCK${Date.now().toString().slice(-10)}`;
 };
-
-const addTicket = async (trip_id, user_id, ticket_price, seat_ids, customer_name, customer_phone, customer_email, pickup_location, dropoff_location, total_price_ticket) => {
-    const connection = await pool.getConnection();
-    try {
-        await connection.beginTransaction();
-        let ticket_code = generateTicketCode();
-
-        let checkSql = `SELECT id FROM tickets WHERE ticket_code = ?`;
-        let [existing] = await connection.execute(checkSql, [ticket_code]);
-        while (existing.length > 0) {
-            ticket_code = generateTicketCode();
-            [existing] = await connection.execute(checkSql, [ticket_code]);
-        }
-
-        const sql = `
-            INSERT INTO tickets (trip_id, user_id, ticket_price, booking_time, status, ticket_code, expires_at, customer_name, customer_phone, customer_email, pickup_location, dropoff_location, total_price_ticket) 
-            VALUES (?, ?, ?, NOW(), 'PENDING', ?, DATE_ADD(NOW(), INTERVAL 20 MINUTE), ?, ?, ?, ?, ?, ?)
-        `;
-        const [result] = await connection.execute(sql, [
-            trip_id, user_id, ticket_price, ticket_code,
-            customer_name, customer_phone, customer_email,
-            pickup_location, dropoff_location, total_price_ticket
-        ]);
-        const ticket_id = result.insertId;
-
-        for (let seat_id of seat_ids) {
-            await connection.execute(
-                `INSERT INTO ticket_seats (ticket_id, seat_id) VALUES (?, ?)`,
-                [ticket_id, seat_id]
-            );
-        }
-
-        await connection.execute(
-            `UPDATE seats SET status = 'PENDING' WHERE id IN (${seat_ids.join(',')})`
-        );
-
-        await connection.commit();
-        return { ticket_id, ticket_code };
-    } catch (error) {
-        await connection.rollback();
-        console.error("Lỗi khi thêm ticket:", error);
-        throw error;
-    } finally {
-        connection.release();
-    }
+const getTicketsByUserId = async (user_id) => {
+  const sql = `
+    SELECT 
+      tk.id, tk.ticket_code, tk.trip_name, tk.departure_time, tk.total_price_ticket, 
+      tk.status, tk.seat_count, p.payment_method, p.payment_status
+    FROM tickets tk
+    LEFT JOIN payments p ON tk.id = p.ticket_id
+    WHERE tk.user_id = ? 
+      AND tk.status NOT IN ('PENDING', 'CANCELED') -- 💥 loại bỏ vé không cần
+    ORDER BY tk.booking_time DESC
+  `;
+  const [rows] = await pool.execute(sql, [user_id]);
+  return rows;
 };
+
+const addTicket = async (
+  trip_id,
+  user_id,
+  ticket_price,
+  seat_ids,
+  customer_name,
+  customer_phone,
+  customer_email,
+  pickup_location,
+  dropoff_location,
+  total_price_ticket
+) => {
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    // Lấy tên chuyến đi từ bảng trips
+    const [trip] = await connection.execute(
+      `SELECT departure_location, destination_location, departure_time FROM trips WHERE id = ?`,
+      [trip_id]
+    );
+    const trip_name = trip.length
+      ? `${trip[0].departure_location} → ${trip[0].destination_location}`
+      : '';
+    const departure_time = trip.length ? trip[0].departure_time : null;
+
+    // Tạo mã vé duy nhất
+    let ticket_code = generateTicketCode();
+    let [existing] = await connection.execute(
+      `SELECT id FROM tickets WHERE ticket_code = ?`,
+      [ticket_code]
+    );
+    while (existing.length > 0) {
+      ticket_code = generateTicketCode();
+      [existing] = await connection.execute(
+        `SELECT id FROM tickets WHERE ticket_code = ?`,
+        [ticket_code]
+      );
+    }
+
+    const seat_count = seat_ids.length;
+
+    // Thêm vé vào bảng tickets
+    const insertTicketSql = `
+      INSERT INTO tickets (
+        trip_id, user_id, ticket_price, booking_time, status, ticket_code,
+        expires_at, customer_name, customer_phone, customer_email,
+        pickup_location, dropoff_location, total_price_ticket, trip_name,
+        seat_numbers, departure_time, seat_count
+      )
+      VALUES (?, ?, ?, NOW(), 'PENDING', ?, DATE_ADD(NOW(), INTERVAL 20 MINUTE),
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+    const seatNumbers = await Promise.all(
+      seat_ids.map(async (seat_id) => {
+        const [[seat]] = await connection.execute(`SELECT seat_number FROM seats WHERE id = ?`, [seat_id]);
+        return seat ? seat.seat_number : null;
+      })
+    );
+
+    const [result] = await connection.execute(insertTicketSql, [
+      trip_id,
+      user_id,
+      ticket_price,
+      ticket_code,
+      customer_name,
+      customer_phone,
+      customer_email,
+      pickup_location,
+      dropoff_location,
+      total_price_ticket,
+      trip_name,
+      seatNumbers.join(','),
+      departure_time,
+      seat_count
+    ]);
+    const ticket_id = result.insertId;
+
+    // Thêm ghế vào bảng ticket_seats
+    for (const seat_id of seat_ids) {
+      await connection.execute(
+        `INSERT INTO ticket_seats (ticket_id, seat_id) VALUES (?, ?)`,
+        [ticket_id, seat_id]
+      );
+    }
+
+    // Cập nhật ghế sang PENDING
+    await connection.execute(
+      `UPDATE seats SET status = 'PENDING' WHERE id IN (${seat_ids.map(() => '?').join(',')})`,
+      seat_ids
+    );
+
+    await connection.commit();
+    return { ticket_id, ticket_code };
+  } catch (err) {
+    await connection.rollback();
+    console.error('❌ Lỗi khi thêm vé:', err);
+    throw err;
+  } finally {
+    connection.release();
+  }
+};
+
 
 
 
@@ -300,47 +370,69 @@ const updateTicketStatus = async (ticket_id, status) => {
   };
   const searchTickets = async (filters) => {
     let sql = `
-      SELECT 
-        tk.*, 
-        CONCAT(t.departure_location, ' → ', t.destination_location) AS trip_name
-      FROM tickets tk
-      LEFT JOIN trips t ON tk.trip_id = t.id
+      SELECT *
+      FROM tickets
       WHERE 1 = 1
     `;
   
     const params = [];
   
     if (filters.customer_name) {
-      sql += ` AND tk.customer_name LIKE ?`;
+      sql += ` AND customer_name LIKE ?`;
       params.push(`%${filters.customer_name}%`);
     }
   
     if (filters.customer_phone) {
-      sql += ` AND tk.customer_phone LIKE ?`;
+      sql += ` AND customer_phone LIKE ?`;
       params.push(`%${filters.customer_phone}%`);
     }
   
     if (filters.ticket_code) {
-      sql += ` AND tk.ticket_code LIKE ?`;
+      sql += ` AND ticket_code LIKE ?`;
       params.push(`%${filters.ticket_code}%`);
     }
   
     if (filters.status) {
-      sql += ` AND tk.status = ?`;
+      sql += ` AND status = ?`;
       params.push(filters.status);
     }
   
     if (filters.booking_time) {
-      sql += ` AND DATE(tk.booking_time) = ?`;
+      sql += ` AND DATE(booking_time) = ?`;
       params.push(filters.booking_time);
     }
   
-    sql += ` ORDER BY tk.booking_time DESC`;
+    sql += ` ORDER BY booking_time DESC`;
   
     const [rows] = await pool.execute(sql, params);
     return rows;
   };
   
+  const updateSeatAndDepartureTime = async (ticketId, seatNumbers, departureTime) => {
+    const connection = await pool.getConnection();
+    try {
+      await connection.execute(
+        `UPDATE tickets SET seat_numbers = ?, departure_time = ? WHERE id = ?`,
+        [seatNumbers, departureTime, ticketId]
+      );
+    } catch (error) {
+      console.error("❌ Lỗi khi cập nhật seat_numbers và departure_time:", error);
+      throw error;
+    } finally {
+      connection.release();
+    }
+  };
+
+
+  const findTicketByCodeAndPhone = async (ticket_code, customer_phone) => {
+    const sql = `
+        SELECT * FROM tickets 
+        WHERE ticket_code = ? AND customer_phone = ?
+    `;
+    const [rows] = await pool.execute(sql, [ticket_code, customer_phone]);
+    return rows[0]; // Trả về 1 vé duy nhất
+};
+
 const searchTicketByIdOrCode = async (id, ticket_code) => {
     try {
         let sql = 'SELECT * FROM tickets WHERE 1=1';
@@ -371,7 +463,7 @@ module.exports = {
     getAllTicket,
     getAllTicketsWithTripName,
     getTicketById,
-
+getTicketsByUserId,
     generateTicketCode,
     addTicket,
     updateTicket,
@@ -382,7 +474,7 @@ module.exports = {
     deleteExpiredTickets,
     getDetailedTickets,
 
-
+updateSeatAndDepartureTime,
         // Các hàm cập nhật ghế và khách hàng
         getSeatIdsByTicketId,
         getSeatsByTripId,
@@ -392,5 +484,9 @@ module.exports = {
         updateTicketCustomerStatus,
         getSeatIdsBySeatNumbers,
         getSeatNumbersByTicketId,
-        updateTicketStatus
+        updateTicketStatus,
+
+
+
+        findTicketByCodeAndPhone
 };

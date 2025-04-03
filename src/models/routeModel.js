@@ -181,76 +181,93 @@ const searchRoutes = async ({
     dailyTripCount,
     status,
     createdAt
-}) => {
+  }) => {
     let sql = `
-        SELECT * FROM routes WHERE 1=1
+      SELECT 
+        r.*,
+        (
+          SELECT GROUP_CONCAT(location ORDER BY stop_order SEPARATOR ', ')
+          FROM trip_stops ts
+          WHERE ts.trip_id = (
+            SELECT id FROM trips WHERE route_id = r.id LIMIT 1
+          ) AND ts.stop_type = 'PICKUP'
+        ) AS pickup_location,
+        (
+          SELECT GROUP_CONCAT(location ORDER BY stop_order SEPARATOR ', ')
+          FROM trip_stops ts
+          WHERE ts.trip_id = (
+            SELECT id FROM trips WHERE route_id = r.id LIMIT 1
+          ) AND ts.stop_type = 'DROPOFF'
+        ) AS dropoff_location
+      FROM routes r
+      WHERE 1=1
     `;
+  
     let params = [];
-
+  
     if (departure) {
-        sql += ' AND departure_location LIKE ?';
-        params.push(`%${departure}%`);
+      sql += ' AND r.departure_location LIKE ?';
+      params.push(`%${departure}%`);
     }
-
+  
     if (destination) {
-        sql += ' AND destination_location LIKE ?';
-        params.push(`%${destination}%`);
+      sql += ' AND r.destination_location LIKE ?';
+      params.push(`%${destination}%`);
     }
-
+  
     if (busType) {
-        sql += ' AND bus_type LIKE ?';
-        params.push(`%${busType}%`);
+      sql += ' AND r.bus_type LIKE ?';
+      params.push(`%${busType}%`);
     }
-
+  
     if (ticketPrice) {
-        sql += ' AND ticket_price <= ?';
-        params.push(ticketPrice);
+      sql += ' AND r.ticket_price <= ?';
+      params.push(ticketPrice);
     }
-
+  
     if (dailyTripCount) {
-        sql += ' AND daily_trip_count = ?';
-        params.push(dailyTripCount);
+      sql += ' AND r.daily_trip_count = ?';
+      params.push(dailyTripCount);
     }
-
+  
     if (status !== undefined && status !== '') {
-        sql += ' AND active = ?';
-        params.push(Number(status)); // ép về số 0 hoặc 1
+      sql += ' AND r.active = ?';
+      params.push(Number(status));
     }
-    
+  
     if (createdAt) {
-        sql += ' AND DATE(created_at) = ?';
-        params.push(createdAt);
+      sql += ' AND DATE(r.created_at) = ?';
+      params.push(createdAt);
     }
-    
-    console.log("📌 SQL:", sql);
-console.log("📌 Params:", params);
-
-
+  
+    sql += ' ORDER BY r.created_at ASC';
+  
     const [rows] = await pool.execute(sql, params);
     return rows;
-};
+  };
+  
 
-const getRouteAdmin = async () => {
+  const getRouteAdmin = async () => {
     try {
         const sql = `
             SELECT 
-                id,
-                departure_location,
-                destination_location,
-                distance,
-                travel_time,
-                bus_type,
-                ticket_price,
-                daily_trip_count,
-                departure_times,
-                bus_ids, -- 🛠 THÊM DÒNG NÀY
-                generate_days_ahead,
-                auto_generate_trips,
-                active,
-                created_at,
-                updated_at
-            FROM routes
-            ORDER BY created_at ASC
+                r.*,
+                (
+                    SELECT GROUP_CONCAT(location ORDER BY stop_order SEPARATOR ', ')
+                    FROM trip_stops ts
+                    WHERE ts.trip_id = (
+                        SELECT id FROM trips WHERE route_id = r.id LIMIT 1
+                    ) AND ts.stop_type = 'PICKUP'
+                ) AS pickup_location,
+                (
+                    SELECT GROUP_CONCAT(location ORDER BY stop_order SEPARATOR ', ')
+                    FROM trip_stops ts
+                    WHERE ts.trip_id = (
+                        SELECT id FROM trips WHERE route_id = r.id LIMIT 1
+                    ) AND ts.stop_type = 'DROPOFF'
+                ) AS dropoff_location
+            FROM routes r
+            ORDER BY r.created_at ASC
         `;
         const [rows] = await pool.execute(sql);
         return rows;
@@ -259,6 +276,7 @@ const getRouteAdmin = async () => {
         return [];
     }
 };
+
 
 const getTripsByRouteInToday = async (departure, destination) => {
     const sql = `

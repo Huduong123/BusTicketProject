@@ -6,9 +6,6 @@ block content
       // Sidebar bên trái
       .col-md-3
         .list-group
-          a.list-group-item.list-group-item-action(href="/thong-tin-tai-khoan/TAPay") 
-            i.fas.fa-wallet.me-2 
-            | FUTAPay
           a.list-group-item.list-group-item-action(href="/thong-tin-tai-khoan/thong-tin-chung") 
             i.fas.fa-user-circle.me-2 
             | Thông tin tài khoản
@@ -28,24 +25,7 @@ block content
           .page-header
             h4.mb-0 Lịch sử mua vé
             p.text-muted Theo dõi và quản lý quá trình lịch sử mua vé của bạn
-          button.btn.btn-outline-danger Đặt vé
-
-        // Form lọc vé
-        .row.g-2.mb-3
-          .col-md-3
-            input.form-control(type="text", placeholder="📄 Nhập Mã vé")
-          .col-md-2
-            input.form-control(type="date")
-          .col-md-3
-            input.form-control(type="text", placeholder="Tuyến đường")
-          .col-md-2
-            select.form-select
-              option(value="") Trạng thái
-              option(value="pending") Chờ xử lý
-              option(value="done") Đã thanh toán
-              option(value="cancel") Đã hủy
-          .col-md-2
-            button.btn.btn-outline-secondary.w-100 Tìm
+          a.btn.btn-outline-danger(href="/lichtrinh") Đặt vé
 
         // Bảng dữ liệu vé
         .table-responsive
@@ -61,8 +41,32 @@ block content
                 th Trạng thái
                 th Thao tác
             tbody
-              tr
-                td(colspan="8")
-                  .text-center.p-4
-                    img(src="/images/nodata.png" alt="no-data" width="60")
-                    p.mt-2.text-muted No Data
+              if tickets && tickets.length
+                each ticket in tickets
+                  tr
+                    td #{ticket.ticket_code}
+                    td #{ticket.seat_count || 1}
+                    td #{ticket.trip_name}
+                    td #{ticket.departure_time ? new Date(ticket.departure_time).toLocaleString("vi-VN") : '---'}
+                    td #{ticket.total_price_ticket.toLocaleString()}đ
+                    td #{ticket.payment_method || '---'}
+                    td
+                      if ticket.payment_status === 'COMPLETED'
+                        span.badge.bg-success Thành công
+                      else if ticket.payment_status === 'PENDING'
+                        span.badge.bg-warning.text-dark Chờ thanh toán
+                      else if ticket.payment_status === 'FAILED'
+                        span.badge.bg-danger Thất bại
+                      else if ticket.status === 'CANCELED'
+                        span.badge.bg-secondary Đã hủy
+                      else
+                        span.badge.bg-light.text-dark #{ticket.payment_status || ticket.status}
+                    td
+                      a(href=`/thong-tin-tai-khoan/xem-chi-tiet-ve/${ticket.id}` class="text-warning")
+                        i.fas.fa-external-link-alt
+              else
+                tr
+                  td(colspan="8")
+                    .text-center.p-4
+                      img(src="/images/nodata.png" alt="no-data" width="60")
+                      p.mt-2.text-muted Không có vé nào được tìm thấy.

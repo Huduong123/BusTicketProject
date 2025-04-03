@@ -288,3 +288,12 @@ body.modal-open {
 }
 
 
+.header {
+  width: 100%; /* Đảm bảo header không bị hẹp */
+}
+
+.nav {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}

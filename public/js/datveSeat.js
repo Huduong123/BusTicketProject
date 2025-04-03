@@ -170,7 +170,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                     const data = await response.json();
                     if (response.ok) {
-                        alert(`Đặt vé thành công! Mã vé: ${data.ticket_code}`);
                         window.location.href = `/thanhtoan?trip_id=${tripId}&ticket_id=${data.ticket_id}&ticket_code=${data.ticket_code}&total_price=${selectedSeats.length * seatPrice}&customer_name=${encodeURIComponent(customerName)}&customer_phone=${encodeURIComponent(customerPhone)}&customer_email=${encodeURIComponent(customerEmail)}`;
                     } else {
                         alert(data.message || "Lỗi khi đặt vé!");

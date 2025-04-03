@@ -1,0 +1,81 @@
+body {
+    background-color: #f2f4f8;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  .ticket-card {
+    max-width: 960px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    padding: 40px 50px;
+    transition: 0.3s;
+  }
+  
+  .ticket-header {
+    color: #28a745;
+    font-weight: 700;
+    font-size: 30px;
+  }
+  
+  .ticket-subtitle {
+    font-size: 17px;
+    color: #666;
+    margin-bottom: 16px;
+  }
+  
+  .ticket-label {
+    font-weight: 600;
+    color: #333;
+    font-size: 15px;
+  }
+  
+  .ticket-value {
+    color: #444;
+    font-size: 15px;
+  }
+  
+  .ticket-section {
+    margin-bottom: 36px;
+  }
+  
+  .ticket-divider {
+    border-top: 1px solid #e4e6eb;
+    margin: 36px 0;
+  }
+  
+  .btn-return {
+    background-color: #343a40;
+    color: #fff;
+    font-weight: 600;
+    border-radius: 30px;
+    padding: 12px 30px;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .btn-return:hover {
+    background-color: #212529;
+    color: #f8f9fa;
+  }
+  
+  .qr-box {
+    text-align: center;
+    padding: 20px 0;
+  }
+  
+  .qr-box img {
+    width: 130px;
+    border-radius: 8px;
+  }
+  
+  .ticket-box {
+    background-color: #f8f9fa;
+    border: 1px dashed #ccc;
+    padding: 16px;
+    border-radius: 8px;
+    margin-top: 16px;
+    font-size: 15px;
+    color: #444;
+  }
+  

@@ -25,10 +25,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 <div class="dropdown">
                     <span id="userDropdown">Chào, ${user.full_name} ▼</span>
                     <div class="dropdown-menu">
-                        <a href="/thong-tin-tai-khoan/TAPay">FUTAPay</a>
                         <a href="/thong-tin-tai-khoan/thong-tin-chung">Thông tin tài khoản</a>
                         <a href="/thong-tin-tai-khoan/lich-su-mua-ve">Lịch sử mua vé</a>
-                        <a href="/address">Địa chỉ của bạn</a>
                         <a href="/thong-tin-tai-khoan/resetpassword">Đặt lại mật khẩu</a>
                         <a href="#" class="logout-link">Đăng xuất</a>
                     </div>
@@ -120,7 +118,8 @@ document.addEventListener("DOMContentLoaded", function () {
             const phone = document.getElementById("phoneRegister").value;
             const email = document.getElementById("emailRegister").value;
             const password = document.getElementById("passwordRegister").value;
-            const confirmPassword = document.getElementById("confirmPassword").value;
+            const confirmPassword = document.getElementById("confirmPasswordRegister").value;
+
 
             if (password !== confirmPassword) {
                 alert("Mật khẩu xác nhận không khớp!");

@@ -1,9 +1,103 @@
 extends ../layouts/layoutAdmin
 
 block content
-  .dashboard
-    h2 Bảng điều khiển
-    .stats
-      .card Tổng số chuyến xe: 120
-      .card Vé đã bán: 540
-      .card Doanh thu tháng: 50,000,000 VNĐ
+  .container.mt-4
+    h2.mb-4 Bảng điều khiển hệ thống
+
+    // Thống kê tổng quan
+    .row.g-3
+      .col-md-3
+        .card.text-bg-primary.shadow-sm
+          .card-body
+            h5.card-title Tổng số chuyến xe
+            p.display-6 #{totalTrips}
+      .col-md-3
+        .card.text-bg-success.shadow-sm
+          .card-body
+            h5.card-title Vé đã bán
+            p.display-6 #{ticketsSold}
+      .col-md-3
+        .card.text-bg-warning.shadow-sm
+          .card-body
+            h5.card-title Doanh thu tháng
+            p.display-6 #{monthlyRevenue.toLocaleString()} VNĐ
+      .col-md-3
+        .card.text-bg-info.shadow-sm
+          .card-body
+            h5.card-title Tổng số tuyến xe
+            p.display-6 #{totalRoutes}
+
+    // Biểu đồ doanh thu
+    h4.mt-5.mb-3 Doanh thu 7 ngày gần nhất
+    canvas#revenueChart(style="max-height: 300px;")
+
+    // Danh sách chuyến sắp khởi hành
+    h4.mt-5.mb-3 Các chuyến xe sắp khởi hành hôm nay
+    table.table.table-striped.table-bordered
+      thead
+        tr
+          th Mã chuyến
+          th Tuyến đường
+          th Giờ khởi hành
+          th Trạng thái
+      tbody
+        each trip in upcomingTrips
+          tr
+            td #{trip.code}
+            td #{trip.route}
+            td #{trip.time}
+            td 
+              if trip.status == 'ON_TIME'
+                span.badge.bg-success ON_TIME
+              else if trip.status == 'CANCELED'
+                span.badge.bg-danger CANCELED
+              else if trip.status == 'DELAYED'
+                span.badge.bg-warning.text-dark DELAYED
+              else
+                span.badge.bg-secondary #{trip.status}
+
+    // Vé mới đặt
+    h4.mt-5.mb-3 Vé đặt gần đây
+    table.table.table-hover
+      thead
+        tr
+          th Mã vé
+          th Tên khách
+          th Tuyến
+          th Giá
+          th Thời gian đặt
+      tbody
+        each ticket in recentTickets
+          tr
+            td #{ticket.code}
+            td #{ticket.name}
+            td #{ticket.route}
+            td #{ticket.price.toLocaleString()} VNĐ
+            td #{ticket.time}
+
+  // Script biểu đồ
+  script(src="https://cdn.jsdelivr.net/npm/chart.js")
+  script.
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+    const revenueChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: !{JSON.stringify(revenueChart.labels)}, // ['27/03', '28/03', ...]
+        datasets: [{
+          label: 'Doanh thu (VNĐ)',
+          data: !{JSON.stringify(revenueChart.values)}, // [10000000, 15000000, ...]
+          borderColor: 'rgb(75, 192, 192)',
+          tension: 0.3,
+          fill: false
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top'
+          }
+        }
+      }
+    });

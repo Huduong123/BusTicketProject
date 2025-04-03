@@ -1,4 +1,5 @@
 const Ticket = require('../models/ticketModel');
+const { maskPhone, maskEmail } = require('./successController');
 
 class TicketController {
     async getAllTicket(req, res) {
@@ -24,27 +25,68 @@ class TicketController {
             res.status(500).json({ message: 'Lỗi server' });
         }
     }
-
-    async addTicket(req, res) {
-        try {
-            const { trip_id, ticket_price, seat_ids, customer_name, customer_phone, customer_email, pickup_location, dropoff_location, total_price_ticket } = req.body;
-    
-            // 🟢 Lấy `user_id` từ `req.user` (được gán bởi middleware `checkAuthUser`)
-            const user_id = req.user ? req.user.id : null;
-    
-            if (!trip_id || !ticket_price || !seat_ids || seat_ids.length === 0 || !customer_name || !customer_phone || !customer_email) {
-                return res.status(400).json({ message: "Thiếu thông tin đặt vé" });
-            }
-    
-            console.log("🟢 Đang đặt vé cho user_id:", user_id); // 🔍 Debug kiểm tra `user_id`
-    
-            const { ticket_id, ticket_code } = await Ticket.addTicket(trip_id, user_id, ticket_price, seat_ids, customer_name, customer_phone, customer_email, pickup_location, dropoff_location, total_price_ticket);
-            
-            res.status(201).json({ message: 'Vé đã được giữ tạm thời!', ticket_id, ticket_code });
-        } catch (error) {
-            console.error("❌ Lỗi đặt vé:", error);
-            res.status(500).json({ message: 'Lỗi server' });
+    async getTicketsByUser(req, res) {
+      try {
+        const userId = req.user?.id;
+        if (!userId) {
+          return res.redirect('/login');
         }
+    
+        const tickets = await Ticket.getTicketsByUserId(userId);
+        res.render('thong-tin-tai-khoan/lich-su-mua-ve', {
+          tickets
+        });
+      } catch (err) {
+        console.error("❌ Lỗi lấy lịch sử vé:", err);
+        res.status(500).send("Lỗi server");
+      }
+    }
+    
+    async addTicket(req, res) {
+      try {
+        const {
+          trip_id,
+          ticket_price,
+          seat_ids,
+          customer_name,
+          customer_phone,
+          customer_email,
+          pickup_location,
+          dropoff_location,
+          total_price_ticket
+        } = req.body;
+  
+        const user_id = req.user?.id || null;
+  
+        if (
+          !trip_id || !ticket_price || !seat_ids || seat_ids.length === 0 ||
+          !customer_name || !customer_phone || !customer_email
+        ) {
+          return res.status(400).json({ message: 'Thiếu thông tin đặt vé' });
+        }
+  
+        const { ticket_id, ticket_code } = await Ticket.addTicket(
+          trip_id,
+          user_id,
+          ticket_price,
+          seat_ids,
+          customer_name,
+          customer_phone,
+          customer_email,
+          pickup_location,
+          dropoff_location,
+          total_price_ticket
+        );
+  
+        res.status(201).json({
+          message: 'Vé đã được giữ tạm thời!',
+          ticket_id,
+          ticket_code
+        });
+      } catch (err) {
+        console.error('❌ Lỗi khi đặt vé:', err);
+        res.status(500).json({ message: 'Lỗi server', error: err.message });
+      }
     }
     
     
@@ -294,7 +336,47 @@ class TicketController {
           res.status(500).send("Lỗi server");
         }
       }
+      async viewTicketDetail(req, res) {
+        try {
+          const { ticket_id } = req.params;
+          const ticket = await Ticket.getTicketById(ticket_id);
       
+          if (!ticket) {
+            return res.status(404).send("Không tìm thấy vé.");
+          }
+      
+          // 🔒 Thêm thông tin đã ẩn
+          ticket.customer_phone_masked = maskPhone(ticket.customer_phone);
+          ticket.customer_email_masked = maskEmail(ticket.customer_email);
+      
+          res.render('thong-tin-tai-khoan/chi-tiet-ve', { ticket });
+        } catch (err) {
+          console.error("❌ Lỗi khi hiển thị chi tiết vé:", err);
+          res.status(500).send("Lỗi server");
+        }
+      }
+      
+      async findTicketByCodeAndPhone(req, res) {
+        try {
+            const { phone, 'ticket-code': ticket_code } = req.body;
+    
+            if (!phone || !ticket_code) {
+                return res.render('traCuuVe', { error: 'Vui lòng nhập đầy đủ thông tin.', ticket: null });
+            }
+    
+            const ticket = await Ticket.findTicketByCodeAndPhone(ticket_code, phone);
+    
+            if (!ticket) {
+                return res.render('traCuuVe', { error: 'Không tìm thấy vé phù hợp.', ticket: null });
+            }
+    
+            return res.render('thong-tin-tai-khoan/chi-tiet-ve', { ticket });
+        } catch (error) {
+            console.error("❌ Lỗi tra cứu vé:", error);
+            res.status(500).render('traCuuVe', { error: 'Lỗi server khi tra cứu.', ticket: null });
+        }
+    }
+    
 }
 
 module.exports = new TicketController();

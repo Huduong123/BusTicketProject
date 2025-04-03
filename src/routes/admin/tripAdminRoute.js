@@ -25,5 +25,5 @@ router.post('/delete/:trip_id', checkAuthAdmin, tripController.deleteTrip);
 router.delete('/:trip_id',checkAuthAdmin, tripController.deleteTrip);
 
 // [GET] localhost:3000/admins/trips/search
-router.get('/search', tripController.searchTripsAdvanced);
+router.get('/search',checkAuthAdmin, tripController.searchTripsAdvanced);
 module.exports = router

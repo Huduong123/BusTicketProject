@@ -131,17 +131,29 @@ const deleteTrip = async (trip_id) => {
     try {
         await connection.beginTransaction();
 
-        const sqlDeleteTickets = 'DELETE FROM tickets WHERE trip_id = ?';
-        await connection.execute(sqlDeleteTickets, [trip_id]);
+        // 1. Cập nhật trip_id của vé thành NULL (giữ lại vé)
+        await connection.execute(
+            'UPDATE tickets SET trip_id = NULL WHERE trip_id = ?',
+            [trip_id]
+        );
 
-        const sqlDeleteTripStops = 'DELETE FROM trip_stops WHERE trip_id = ?';
-        await connection.execute(sqlDeleteTripStops, [trip_id]);
+        // 2. Xóa điểm đón/trả
+        await connection.execute(
+            'DELETE FROM trip_stops WHERE trip_id = ?',
+            [trip_id]
+        );
 
-        const sqlDeleteSeats = 'DELETE FROM seats WHERE trip_id = ?';
-        await connection.execute(sqlDeleteSeats, [trip_id]);
+        // 3. Xóa ghế liên quan đến trip
+        await connection.execute(
+            'DELETE FROM seats WHERE trip_id = ?',
+            [trip_id]
+        );
 
-        const sqlDeleteTrip = 'DELETE FROM trips WHERE id = ?';
-        const [result] = await connection.execute(sqlDeleteTrip, [trip_id]);
+        // 4. Xóa chuyến
+        const [result] = await connection.execute(
+            'DELETE FROM trips WHERE id = ?',
+            [trip_id]
+        );
 
         await connection.commit();
         return { success: result.affectedRows > 0 };
@@ -153,6 +165,7 @@ const deleteTrip = async (trip_id) => {
         connection.release();
     }
 };
+
 
 const deleteTripsByRouteId = async (route_id) => {
     const sql = `DELETE FROM trips WHERE route_id = ?`;
@@ -211,17 +224,15 @@ const searchTripsWithDetails = async (departure_location, destination_location, 
         values.push(destination_location);
     }
     if (departure_time) {
-        sql += ' AND (DATE(t.departure_time) = ? OR DATE(t.estimated_arrival_time) = ?)';
-        values.push(departure_time, departure_time);
+        sql += ' AND DATE(t.departure_time) = ?';
+        values.push(departure_time);
     }
-
+    
     sql += " ORDER BY t.departure_time";
 
     const [rows] = await pool.execute(sql, values);
     return rows;
 };
-
-
 
 
 
@@ -232,20 +243,30 @@ const searchTripsAdvanced = async (filters) => {
             t.departure_location AS 'Điểm đi',
             t.destination_location AS 'Điểm đến',
             CONCAT(r.departure_location, ' - ', r.destination_location) AS 'Tuyến xe',
-            r.distance AS 'Quãng đường (km)',
+            t.distance AS 'Quãng đường (km)',
             b.bus_type AS 'Loại xe',
             t.departure_time AS 'Thời gian khởi hành',
             t.estimated_arrival_time AS 'Thời gian đến',
             t.status AS 'Trạng thái',
             t.trip_price AS 'Giá vé',
             t.created_at AS 'Ngày tạo',
-            t.updated_at AS 'Ngày cập nhật'
+            t.updated_at AS 'Ngày cập nhật',
+            (
+                SELECT GROUP_CONCAT(location ORDER BY stop_order SEPARATOR ', ')
+                FROM trip_stops
+                WHERE trip_id = t.id AND stop_type = 'PICKUP'
+            ) AS 'Điểm đón',
+            (
+                SELECT GROUP_CONCAT(location ORDER BY stop_order SEPARATOR ', ')
+                FROM trip_stops
+                WHERE trip_id = t.id AND stop_type = 'DROPOFF'
+            ) AS 'Điểm trả'
         FROM trips t
         JOIN routes r ON t.route_id = r.id
         JOIN buses b ON t.bus_id = b.id
         WHERE 1=1
     `;
-    
+
     let values = [];
 
     if (filters.departure_location) {
@@ -272,17 +293,17 @@ const searchTripsAdvanced = async (filters) => {
     if (filters.departure_time && !filters.estimated_arrival_time) {
         sql += ' AND DATE(t.departure_time) >= ?';
         values.push(filters.departure_time);
-    } 
-    else if (filters.departure_time && filters.estimated_arrival_time) {
+    } else if (filters.departure_time && filters.estimated_arrival_time) {
         sql += ' AND DATE(t.departure_time) BETWEEN ? AND ?';
         values.push(filters.departure_time, filters.estimated_arrival_time);
     }
 
-    sql += " ORDER BY t.departure_time"; 
+    sql += " ORDER BY t.departure_time";
 
     const [rows] = await pool.execute(sql, values);
     return rows;
 };
+
 
 const getRouteAndTime = async (tripId) => {
     const sql = `

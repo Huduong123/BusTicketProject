@@ -23,10 +23,8 @@ router.get('/auth/login-admin', (req, res) => {
     res.render('admin/dangnhapAdmin');
 });
 router.get('/', checkAuthAdmin, adminController.getAdminPage);
-
-router.get('/dashboard', checkAuthAdmin, (req, res) => {
-    res.render('admin/dashboard', {title: "Trang Dashboard"});
-});
+adminDashboardController = require('../controllers/adminDashBoardController');
+router.get('/dashboard', checkAuthAdmin, adminDashboardController.showDashboard);
 
 // [GET] localhost:3000/admins
 router.get('/list',checkAuthAdmin, adminController.getAllAdmin);

@@ -1,8 +1,8 @@
 extends layouts/layout
 
 block head
-    link(rel="stylesheet" href="/css/thanhtoan.css")
-    script(src="/js/thanhtoan.js")
+  link(rel="stylesheet" href="/css/thanhtoan1.css")
+  script(src="/js/thanhtoan.js")
 
 block content
   .container
@@ -10,31 +10,14 @@ block content
       h1#trip-name Chuyến đi đang tải...
       p#trip_date Đang tải...
 
+    .block-timer
+      p.countdown-time.text-danger.fs-5.text-center.mt-3
+        i.fas.fa-clock.me-2
+        | Thời gian còn lại để thanh toán: 
+        span#countdown 20:00
+
     .content-wrapper
-      // Cột bên trái: Phương thức thanh toán
-      .payment-methods
-        h2 Chọn phương thức thanh toán
-        each method in ['ZaloPay', 'ShopeePay', 'MOMO', 'VNPAY', 'ViettelMoney', 'VietQR']
-          label.method
-            input(type="radio" name="payment")
-            img(src=`/images/${method.toLowerCase().replace(' ', '')}.png` alt=method)
-            span #{method}
-
-      // Cột giữa: Tổng thanh toán và QR Code
-      .payment-summary
-        .total-amount
-          h2 Tổng thanh toán: 
-          span.price#total-price Đang tải...
-        .qr-code
-          img(src="/images/qrcodeTA.png" alt="QR Code")
-        .payment-instructions
-          h3 Hướng dẫn thanh toán
-          ol
-            li Mở ứng dụng thanh toán trên điện thoại
-            li Dùng biểu tượng 📷 để quét mã QR
-            li Quét mã và thanh toán
-
-      // Cột bên phải: Thông tin hành khách & chuyến đi
+      // Chỉ hiển thị thông tin chuyến đi bên phải
       .right-column
         .info-container
           .customer-info
@@ -52,10 +35,10 @@ block content
             p#dropoff-location Điểm trả khách: Đang tải...
           .price-details
             h3 Chi tiết giá
-            p#ticket-price Giá vé : Đang tải...
+            p#ticket-price Giá vé: Đang tải...
             p Phí thanh toán: 0đ
             p#total-price-ticket Tổng tiền: Đang tải...
 
     // Khu vực chứa nút thanh toán
-    .payment-actions
+    .payment-actions.mt-4.text-center
       button#pay-now(type="button") Thanh toán

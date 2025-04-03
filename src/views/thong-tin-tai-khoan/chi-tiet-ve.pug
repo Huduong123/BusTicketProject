@@ -1,0 +1,75 @@
+extends ../layouts/layout
+
+block head
+  link(rel="stylesheet" href="/css/chi-tiet-ve.css")
+
+block content
+  .container.mt-5.mb-5
+    .ticket-card
+      .text-center.ticket-section
+        h3.ticket-header ✅ Thanh toán thành công
+        p.ticket-subtitle Tổng giá vé: 
+          span.text-danger.fs-4.fw-bold.ms-2 #{ticket.total_price_ticket.toLocaleString()}đ
+        p.mb-1
+          span.ticket-label Phương thức thanh toán: 
+          span.ticket-value.ms-2 #{ticket.payment_method || 'VNPay'}
+        p
+          span.ticket-label Trạng thái thanh toán: 
+          span.ticket-value.ms-2 #{ticket.payment_status || 'COMPLETED'}
+
+      .ticket-divider
+
+      .row.ticket-section
+        .col-md-6
+          h5.ticket-label.mb-3 Thông tin hành khách
+          ul.list-unstyled
+            li.mb-2
+              span.ticket-label Họ và tên: 
+              span.ticket-value.ms-2 #{ticket.customer_name}
+            li.mb-2
+              span.ticket-label Số điện thoại: 
+              span.ticket-value.ms-2 #{ticket.customer_phone_masked}
+            li
+              span.ticket-label Email: 
+              span.ticket-value.ms-2 #{ticket.customer_email_masked}
+
+        .col-md-6
+          h5.ticket-label.mb-3 Thông tin chuyến đi
+          ul.list-unstyled
+            li.mb-2
+              span.ticket-label Tuyến xe: 
+              span.ticket-value.ms-2 #{ticket.trip_name}
+            li.mb-2
+              span.ticket-label Thời gian khởi hành: 
+              span.ticket-value.ms-2 #{ticket.departure_time ? new Date(ticket.departure_time).toLocaleString('vi-VN') : '---'}
+            li.mb-2
+              span.ticket-label Ghế đã đặt: 
+              span.ticket-value.ms-2 #{ticket.seat_numbers || '---'}
+            li.mb-2
+              span.ticket-label Điểm đón: 
+              span.ticket-value.ms-2 #{ticket.pickup_location || '---'}
+            li
+              span.ticket-label Điểm trả: 
+              span.ticket-value.ms-2 #{ticket.dropoff_location || '---'}
+
+      .ticket-divider
+
+      h5.ticket-label.mb-3 Chi tiết giá vé
+      .row.ticket-section
+        .col-md-4.mb-2
+          p.mb-1
+            span.ticket-label Giá vé: 
+            span.ticket-value.ms-2 #{ticket.ticket_price.toLocaleString()}đ
+        .col-md-4.mb-2
+          p.mb-1
+            span.ticket-label Số vé: 
+            span.ticket-value.ms-2 #{ticket.seat_count || 1}
+        .col-md-4.mb-2
+          p.mb-1
+            span.ticket-label Tổng cộng: 
+            span.ticket-value.ms-2 #{ticket.total_price_ticket.toLocaleString()}đ
+
+      .text-center.mt-5
+        a.btn.btn-return(href="/thong-tin-tai-khoan/lich-su-mua-ve")
+          i.fas.fa-arrow-left.me-2
+          | Quay lại lịch sử

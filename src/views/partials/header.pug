@@ -15,7 +15,6 @@
           .dropdown-menu
             a(href="/account") Thông tin tài khoản
             a(href="/history") Lịch sử mua vé
-            a(href="/address") Địa chỉ của bạn
             a(href="/reset-password") Đặt lại mật khẩu
             a(href="#" class="logout-link") Đăng xuất
       else 
@@ -69,7 +68,7 @@ div#registerModal.modal.fade(tabindex="-1" aria-hidden="true")
             input.form-control(type="password" id="passwordRegister" placeholder="Nhập mật khẩu" )
           .mb-2
             label.form-label(for="confirmPassword") Xác nhận mật khẩu
-            input.form-control(type="password" id="confirmPassword" placeholder="Nhập lại mật khẩu" )
+            input.form-control(type="password", id="confirmPasswordRegister" placeholder="Nhập lại mật khẩu")
           button.btn.btn-primary.w-100.mt-3(type="submit") Đăng ký
       .modal-footer.justify-content-center
         span Bạn đã có tài khoản? 

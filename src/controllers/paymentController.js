@@ -78,17 +78,30 @@ class PaymentController {
     }
     
     async deletePayment(req, res) {
-        try {
-            const result = await Payment.deletePayment(req.params.id);
-            if (result.affectedRows === 0) {
-                return res.status(404).json({ message: 'Không tìm thấy thanh toán' });
-            }
-            res.status(200).json({ message: 'Xóa thanh toán thành công' });
-        } catch (error) {
-            console.log(error);
-            res.status(500).json({ message: 'Lỗi server' });
+      try {
+        const { id } = req.params;
+        const payment = await Payment.getPaymentById(id);
+    
+        if (!payment) {
+          return res.status(404).json({ message: 'Không tìm thấy thanh toán' });
         }
+    
+        if (payment.payment_status === 'COMPLETED') {
+          return res.status(400).json({ message: 'Không thể xóa thanh toán đã hoàn tất' });
+        }
+    
+        const result = await Payment.deletePayment(id);
+        if (result.affectedRows === 0) {
+          return res.status(404).json({ message: 'Không tìm thấy thanh toán' });
+        }
+    
+        res.status(200).json({ message: 'Xóa thanh toán thành công' });
+      } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'Lỗi server' });
+      }
     }
+    
 
 
     async renderAdminPayments(req, res) {
@@ -108,14 +121,26 @@ class PaymentController {
       async cancelPayment(req, res) {
         try {
           const { id } = req.params;
+          const payment = await Payment.getPaymentById(id);
+      
+          if (!payment) {
+            return res.status(404).send("Không tìm thấy thanh toán.");
+          }
+      
+          if (payment.payment_status === 'COMPLETED') {
+            return res.status(400).send("Không thể hủy thanh toán đã hoàn tất.");
+          }
+      
           const result = await Payment.updatePaymentStatus(id, 'CANCELED');
           if (result === 0) return res.status(404).send("Không tìm thấy thanh toán.");
+      
           res.redirect('/admins/payments');
         } catch (error) {
           console.error("❌ Lỗi khi hủy thanh toán:", error);
           res.status(500).send("Lỗi khi hủy thanh toán.");
         }
       }
+      
       async searchPayments(req, res) {
         try {
           const filters = {

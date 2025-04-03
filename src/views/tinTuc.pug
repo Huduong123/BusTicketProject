@@ -1,24 +1,48 @@
 extends layouts/layout
+
 block head
-    link(rel="stylesheet" href="/css/tintuc.css") 
+  link(rel="stylesheet" href="/css/tintuc.css") 
+
 block content  
-    main.container
-        h2.section-title Tin tức nổi bật
-        section.news-grid
-            .news-featured
-                img(src="/images/news-main.jpg" alt="Tin tức nổi bật")
-                h3: a(href="/tintuc/1") FUTA ĐỒNG HÀNH CÙNG SHB - X3 QUÀ TẶNG
-                p 14:35 26/07/2023
-            .news-list
-                article.news-item
-                    img(src="/images/pt1.png" alt="Tin tức 1")
-                    h3: a(href="/tintuc/2") Công ty Phương Trang khai trương tuyến mới
-                    p 08:22 17/02/2025
-                article.news-item
-                    img(src="/images/pt2.png" alt="Tin tức 2")
-                    h3: a(href="/tintuc/3") Nhập mã FUTA100 - Giảm 15% cho khách hàng mới
-                    p 09:33 13/02/2025
-                article.news-item
-                    img(src="/images/news3.jpg" alt="Tin tức 3")
-                    h3: a(href="/tintuc/4") Bến xe Thanh Phú khai trương tuyến mới
-                    p 15:24 12/02/2025
+  main.container
+    h2.section-title Tin tức nổi bật
+
+    .news-section
+      // Tin nổi bật bên trái
+      .news-featured
+        a(href="/tintuc/1")
+          img(src="/images/xekhach1.png" alt="Tin tức nổi bật")
+        h3.title
+          a(href="/tintuc/1") TAXT ĐỒNG HÀNH CÙNG SHB - X3 QUÀ TẶNG
+        p.date
+          i.fas.fa-clock.me-2
+          | 14:35 26/07/2023
+
+      // Các tin còn lại bên phải
+      .news-list
+        article.news-item
+          a(href="/tintuc/2")
+            img(src="/images/pt1.png" alt="Tin tức 1")
+          h4.title
+            a(href="/tintuc/2") Công ty Xe TAXT khai trương tuyến mới
+          p.date
+            i.fas.fa-clock.me-2
+            | 08:22 17/02/2025
+
+        article.news-item
+          a(href="/tintuc/3")
+            img(src="/images/pt2.png" alt="Tin tức 2")
+          h4.title
+            a(href="/tintuc/3") Nhập mã TAXT100 - Giảm 15% cho khách hàng mới
+          p.date
+            i.fas.fa-clock.me-2
+            | 09:33 13/02/2025
+
+        article.news-item
+          a(href="/tintuc/4")
+            img(src="/images/xekhach2.png" alt="Tin tức 3")
+          h4.title
+            a(href="/tintuc/4") Bến xe Thanh Phú khai trương tuyến mới
+          p.date
+            i.fas.fa-clock.me-2
+            | 15:24 12/02/2025

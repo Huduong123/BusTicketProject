@@ -41,4 +41,9 @@ class SuccessController{
     
 }
 
-module.exports = new SuccessController();
+module.exports = {
+  getSuccessPage: new SuccessController().getSuccessPage,
+  maskPhone,
+  maskEmail
+};
+

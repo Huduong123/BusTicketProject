@@ -7,8 +7,8 @@ body {
 }
 
 /* Container chính */
-.container {
-    background-color: #ffffff; /* Trắng */
+.tra-cuu-container {
+    background-color: #ffffff;
     border-radius: 8px;
     padding: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -41,35 +41,40 @@ label {
 select, input {
     width: 100%;
     padding: 12px;
-    border: 2px solid #ffcc99; /* Viền cam nhạt */
+    border: 2px solid #ffcc99;
     border-radius: 5px;
     margin-bottom: 15px;
-    background-color: #f9f8f6; /* Trắng hơi cam nhẹ */
+    background-color: #f9f8f6;
     font-size: 16px;
 }
 
-/* Nút tra cứu */
-button, .search-button {
-    width: 50%; /* Giảm chiều rộng xuống 50% */
-    padding: 10px; /* Giảm padding để nút nhỏ hơn */
+/* Nút tra cứu riêng */
+.btn-tra-cuu {
+    width: 50%;
+    padding: 10px;
     background-color: #ff6600;
     color: white;
     border: none;
     border-radius: 5px;
-    font-size: 16px; /* Giảm font-size */
+    font-size: 16px;
+    font-weight: bold;
     cursor: pointer;
     transition: background 0.3s ease, transform 0.2s;
-    font-weight: bold;
-
+    margin-top: 10px;
 }
 
-
-button:hover, .search-button:hover {
-    background-color: #ff4500; /* Cam sáng hơn khi hover */
-
+.btn-tra-cuu:hover {
+    background-color: #ff4500;
 }
 
-/* 🟢 Thanh điều hướng */
+/* Form tra cứu */
+.search-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Navbar cho trang riêng nếu dùng */
 .navbar {
     background: #ff6600;
     padding: 15px 0;
@@ -79,13 +84,13 @@ button:hover, .search-button:hover {
 .nav-links {
     list-style: none;
     display: flex;
-    justify-content: center; /* Căn giữa các mục */
+    justify-content: center;
     padding: 0;
     margin: 0;
 }
 
 .nav-links li {
-    margin: 0 20px; /* Tạo khoảng cách giữa các mục */
+    margin: 0 20px;
 }
 
 .nav-links a {
@@ -99,9 +104,3 @@ button:hover, .search-button:hover {
 .nav-links a:hover {
     border-bottom: 3px solid white;
 }
-.search-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Căn giữa nút */
-}
-

@@ -35,7 +35,9 @@ block content
 
           .trip-info
             h3 Thông tin chuyến đi
-            p Tuyến xe: #{successData.tuyen_xe}
+            p
+              | #{successData.is_trip_customized ? 'Chuyến đi' : 'Tuyến xe'}: 
+              | #{successData.tuyen_xe}
             p Thời gian khởi hành: #{new Date(successData.departure_time).toLocaleString('vi-VN')}
             p Số ghế: #{successData.seat_numbers}
             p Điểm lên xe: #{successData.pickup_location}

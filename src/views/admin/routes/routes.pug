@@ -69,6 +69,8 @@ block content
           th Giá vé
           th Số chuyến mỗi ngày
           th Giờ khởi hành
+          th Điểm đón
+          th Điểm trả
           th Tự động tạo chuyến?
           th Trạng thái
           th Ngày tạo
@@ -91,6 +93,8 @@ block content
               td= route.ticket_price.toLocaleString('vi-VN') + ' đ'
               td= route.daily_trip_count
               td= JSON.parse(route.departure_times || '[]').join(', ')
+              td= route.pickup_location || '---'
+              td= route.dropoff_location || '---'
               td= route.auto_generate_trips ? 'Có' : 'Không'
               td= route.active ? 'Hoạt động' : 'Ngừng'
               td= new Date(route.created_at).toLocaleString('vi-VN')

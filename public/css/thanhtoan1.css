@@ -1,0 +1,97 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f2f3f5;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .container {
+    max-width: 960px;
+    margin: 30px auto;
+    padding: 25px 30px;
+    background: #ffffffcc;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    backdrop-filter: blur(6px);
+  }
+  
+  .header-thanhtoan {
+    background-color: #ff6600;
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  .header-thanhtoan h1 {
+    font-size: 30px;
+    margin-bottom: 5px;
+  }
+  
+  .header-thanhtoan p {
+    font-size: 18px;
+    margin: 0;
+  }
+  
+  .info-container > div {
+    background-color: #fff;
+    border-left: 5px solid #ff6600;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  
+  .info-container h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .info-container p {
+    font-size: 16px;
+    color: #333;
+    margin: 6px 0;
+  }
+  
+  .highlight {
+    color: #e74c3c;
+    font-weight: 600;
+  }
+  
+  .payment-actions {
+    text-align: center;
+    margin-top: 30px;
+  }
+  
+  #pay-now {
+    background: linear-gradient(to right, #ff6600, #ff8533);
+    color: #fff;
+    border: none;
+    padding: 14px 32px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  #pay-now:hover {
+    background: linear-gradient(to right, #ff8533, #ffa366);
+  }
+  
+  @media (max-width: 768px) {
+    .container {
+      padding: 15px;
+    }
+  
+    #pay-now {
+      width: 100%;
+      font-size: 16px;
+    }
+  }
+  

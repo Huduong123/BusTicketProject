@@ -25,5 +25,6 @@ router.put('/:id', ticketController.updateTicket);
 
 
 router.delete('/:id', ticketController.deleteTicket);
+router.post('/tra-cuu-ve', ticketController.findTicketByCodeAndPhone);
 
 module.exports = router;

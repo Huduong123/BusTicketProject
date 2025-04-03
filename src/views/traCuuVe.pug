@@ -1,11 +1,16 @@
 extends layouts/layout
 
 block head
-    link(rel="stylesheet" href="/css/tracuuve.css") 
+  link(rel="stylesheet", href="/css/tracuuve.css")
+
 block content
-    main.container
-        h2.search-title Tra Cứu Thông Tin Đặt Vé
-        form.search-form(method="POST" action="/tra-cuu-ve")
-            input(type="tel" name="phone" placeholder="Vui lòng nhập số điện thoại" )
-            input(type="text" name="ticket-code" placeholder="Vui lòng nhập mã vé" )
-            button.search-button(type="submit") Tra cứu
+  main.tra-cuu-container
+    h2.search-title Tra Cứu Thông Tin Đặt Vé
+
+    form.search-form(method="POST", action="/tracuuve")
+      input(type="tel", name="phone", placeholder="Vui lòng nhập số điện thoại", required)
+      input(type="text", name="ticket-code", placeholder="Vui lòng nhập mã vé", required)
+      button.btn.btn-primary.btn-tra-cuu(type="submit") Tra cứu
+
+    if notFound
+      p.text-danger.text-center.mt-3 Không tìm thấy vé với thông tin đã nhập.

@@ -80,7 +80,7 @@ block content
         function formatDateTime(inputDate) {
           if (!inputDate) return "";
           const date = new Date(inputDate);
-          if (isNaN(date.getTime())) return ""; // Nếu sai định dạng, trả về chuỗi rỗng
+          if (isNaN(date.getTime())) return "";
           const year = date.getFullYear();
           const month = String(date.getMonth() + 1).padStart(2, "0");
           const day = String(date.getDate()).padStart(2, "0");
@@ -89,48 +89,65 @@ block content
           return `${year}-${month}-${day} ${hours}:${minutes}`;
         }
 
-        // Gán giá trị ngày giờ từ `trip`
         let departureTime = formatDateTime("#{trip.departure_time}");
         let arrivalTime = formatDateTime("#{trip.estimated_arrival_time}");
 
         document.getElementById("departure_time").value = departureTime;
         document.getElementById("estimated_arrival_time").value = arrivalTime;
 
-        // Kích hoạt Flatpickr để hiển thị lịch chọn thời gian
         flatpickr("#departure_time", {
-            enableTime: true,
-            time_24hr: true,
-            dateFormat: "Y-m-d H:i",
-            defaultDate: departureTime
+          enableTime: true,
+          time_24hr: true,
+          dateFormat: "Y-m-d H:i",
+          defaultDate: departureTime
         });
 
         flatpickr("#estimated_arrival_time", {
-            enableTime: true,
-            time_24hr: true,
-            dateFormat: "Y-m-d H:i",
-            defaultDate: arrivalTime
+          enableTime: true,
+          time_24hr: true,
+          dateFormat: "Y-m-d H:i",
+          defaultDate: arrivalTime
         });
-      });
 
-      document.getElementById('updateTripForm').addEventListener('submit', function(event) {
-        event.preventDefault();  // Ngăn form reload trang
-        const formData = new FormData(this);
-        const jsonData = Object.fromEntries(formData.entries());
+        document.getElementById('updateTripForm').addEventListener('submit', function(event) {
+          event.preventDefault();
 
-        console.log("📤 Dữ liệu gửi lên:", jsonData);
+          const formData = new FormData(this);
+          const jsonData = Object.fromEntries(formData.entries());
 
-        fetch(`/admins/trips/${jsonData.trip_id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(jsonData)
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.message.includes("thành công")) {
-            window.location.href = "/admins/trips";
-          } else {
-            alert(data.message);
+          // ✅ So sánh thời gian trước khi gửi lên server
+          const departure = new Date(jsonData.departure_time);
+          const arrival = new Date(jsonData.estimated_arrival_time);
+
+          if (arrival <= departure) {
+            alert("Vui lòng chọn thời gian đến lớn hơn thời gian khởi hành.");
+            return;
           }
-        })
-        .catch(error => console.error("❌ Lỗi gửi dữ liệu:", error));
+
+          // Định dạng lại chuẩn SQL DATETIME (local timezone)
+          function toLocalSQL(dateStr) {
+            const d = new Date(dateStr);
+            const offset = d.getTimezoneOffset() * 60000;
+            const local = new Date(d.getTime() - offset);
+            return local.toISOString().slice(0, 19).replace("T", " ");
+          }
+
+          jsonData.departure_time = toLocalSQL(jsonData.departure_time);
+          jsonData.estimated_arrival_time = toLocalSQL(jsonData.estimated_arrival_time);
+
+          fetch(`/admins/trips/${jsonData.trip_id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(jsonData)
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.message.includes("thành công")) {
+              window.location.href = "/admins/trips";
+            } else {
+              alert(data.message);
+            }
+          })
+          .catch(error => console.error("❌ Lỗi gửi dữ liệu:", error));
+        });
       });

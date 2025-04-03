@@ -104,9 +104,18 @@ block content
         let jsonData = Object.fromEntries(formData.entries());
 
         function formatDateTime(dateStr) {
-            let dateObj = new Date(dateStr);
-            if (isNaN(dateObj.getTime())) return null;
-            return dateObj.toISOString().slice(0, 19).replace("T", " ");
+            const date = new Date(dateStr);
+            const offset = date.getTimezoneOffset() * 60000; // phút → mili giây
+            const localDate = new Date(date.getTime() - offset); // điều chỉnh về giờ địa phương
+            return localDate.toISOString().slice(0, 19).replace("T", " ");
+        }
+
+        const departureDateRaw = new Date(jsonData.departure_time);
+        const arrivalDateRaw = new Date(jsonData.estimated_arrival_time);
+
+        if (arrivalDateRaw <= departureDateRaw) {
+            alert("Vui lòng chọn thời gian đến lớn hơn thời gian khởi hành.");
+            return;
         }
 
         jsonData.departure_time = formatDateTime(jsonData.departure_time);

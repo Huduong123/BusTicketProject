@@ -35,7 +35,10 @@ app.get('/', (req, res) => {
 
 
 
-app.get("/tracuuve", (req, res) => res.render("traCuuVe"));
+const traCuuVeRoute = require('./src/routes/traCuuVeRoute');
+app.use('/tracuuve', traCuuVeRoute);
+ 
+
 app.get("/lienhe", (req, res) => res.render("lienHe"));
 app.get("/tintuc", (req, res) => res.render("tinTuc"));
 app.get("/login", (req, res) => res.render("dangnhap"));

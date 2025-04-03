@@ -20,7 +20,7 @@ router.put('/:route_id', checkAuthAdmin,routeController.updateRoute);
 //  [POST] localhost:3000/routes/delete/:route_id
 router.post('/delete/:route_id', checkAuthAdmin, routeController.deleteRoute);
 
-router.get('/search', routeController.searchRoutes);
+router.get('/search', checkAuthAdmin,routeController.searchRoutes);
 
 
 module.exports = router

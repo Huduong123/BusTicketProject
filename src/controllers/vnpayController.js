@@ -3,7 +3,7 @@ const moment = require("moment");
 const Payment = require("../models/paymentModel");
 const sendMail = require("../utils/sendMail"); // 📩 THÊM DÒNG NÀY
 const successModel = require('../models/successModel'); // ✅ Thêm dòng này
-
+const Ticket = require('../models/ticketModel');
 const vnp_TmnCode = process.env.VNP_TMNCODE;
 const vnp_HashSecret = process.env.VNP_HASHSECRET;
 const vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
@@ -93,7 +93,7 @@ exports.handlePaymentReturn = async (req, res) => {
 
                 await Payment.createPayment(paymentData);
                 const ticketInfo = await successModel.getTicketInfo(ticketId);
-
+                await Ticket.updateSeatAndDepartureTime(ticketId, ticketInfo.seat_numbers, ticketInfo.departure_time);
                 const formattedDepartureTime = new Date(ticketInfo.departure_time).toLocaleString("vi-VN");
                 
                 await sendMail({
