@@ -1,0 +1,57 @@
+extends ../../layouts/layoutAdmin
+
+block content
+  .container.mt-4
+    h2.text-center.mb-4 Quản lý Xe
+
+    // 🔍 Form tìm kiếm
+    .block.mt-3.mb-4
+      form(action="/admins/buses", method="GET", class="row g-3 border rounded bg-light p-3")
+        .col-md-4
+          label.form-label(for="license_plate") Biển số xe
+          input.form-control(type="text", name="license_plate", id="license_plate", value=license_plate || '')
+
+        .col-md-4
+          label.form-label(for="bus_type") Loại xe
+          select.form-select(name="bus_type", id="bus_type")
+            option(value="") -- Tất cả --
+            option(value="Xe giường nằm", selected=(bus_type === 'Xe giường nằm')) Xe giường nằm
+            option(value="Xe limousine", selected=(bus_type === 'Xe limousine')) Xe limousine
+            option(value="Xe ghế ngồi", selected=(bus_type === 'Xe ghế ngồi')) Xe ghế ngồi
+
+        .col-md-4.d-flex.align-items-end
+          button.btn.btn-primary(type="submit") 🔍 Tìm kiếm
+          a.btn.btn-secondary.ms-2(href="/admins/buses") Reset
+
+    .text-end.mb-3
+      a.btn.btn-success(href="/admins/buses/add") ➕ Thêm xe mới
+
+    .table-responsive
+      table.table.table-bordered.table-hover
+        thead.table-dark
+          tr
+            th STT
+            th Biển số
+            th Số ghế
+            th Loại xe
+            th Ngày tạo
+            th Ngày cập nhật
+            th Hành động  
+        tbody
+          if buses && buses.length
+            each bus, index in buses
+              tr
+                td= index + 1
+                td= bus.license_plate
+                td= bus.seat_capacity
+                td= bus.bus_type
+                td= new Date(bus.created_at).toLocaleString('vi-VN')
+                td= new Date(bus.updated_at).toLocaleString('vi-VN')
+                td
+                  .d-flex.gap-2
+                    a.btn.btn-warning.btn-sm(href=`/admins/buses/edit/${bus.id}`) Sửa
+                    form(method="POST", action=`/admins/buses/delete/${bus.id}`, onsubmit="return confirm('Bạn có chắc chắn muốn xoá xe này?')")
+                      button.btn.btn-danger.btn-sm(type="submit") Xoá
+          else
+            tr
+              td.text-center(colspan="7") Không có xe nào trong hệ thống

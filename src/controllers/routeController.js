@@ -41,7 +41,12 @@ class RouteController {
             if (departure_location === destination_location) {
                 return res.status(400).json({ message: 'Điểm đi và đến không được trùng nhau' });
             }
-    
+            
+            // ✅ Thêm đoạn này để kiểm tra trùng tuyến:
+            const isDuplicate = await Route.checkRouteExists(departure_location, destination_location);
+            if (isDuplicate) {
+                return res.status(400).json({ message: 'Tuyến xe này đã tồn tại trong hệ thống' });
+            }
             const times = Array.isArray(departure_times) ? departure_times : JSON.parse(departure_times);
             const buses = Array.isArray(bus_ids) ? bus_ids : JSON.parse(bus_ids);
     
@@ -120,7 +125,7 @@ class RouteController {
     async updateRoute(req, res) {
         try {
             const { route_id } = req.params;
-
+    
             if (!route_id) {
                 return res.status(400).json({ message: "Thiếu ID tuyến xe." });
             }
@@ -133,19 +138,22 @@ class RouteController {
                 bus_type,
                 ticket_price,
                 departure_times,
-                bus_ids
+                bus_ids,
+                pickup_location,
+                dropoff_location
             } = req.body;
-
-            if (!departure_location || !destination_location || !distance || !travel_time ||
-                !ticket_price || !Array.isArray(departure_times) || !Array.isArray(bus_ids)) {
-                console.log("❌ Dữ liệu thiếu hoặc sai định dạng:", req.body);
+    
+            if (
+                !departure_location || !destination_location || !distance || !travel_time ||
+                !ticket_price || !pickup_location || !dropoff_location
+            ) {
                 return res.status(400).json({ message: "Vui lòng điền đầy đủ thông tin" });
             }
-            
     
             if (departure_location === destination_location) {
                 return res.status(400).json({ message: "Điểm đi và điểm đến không được trùng nhau" });
             }
+    
             let times, buses;
             try {
                 times = Array.isArray(departure_times) ? departure_times : JSON.parse(departure_times);
@@ -154,72 +162,80 @@ class RouteController {
                 console.error("❌ Lỗi parse JSON:", err);
                 return res.status(400).json({ message: "Dữ liệu giờ khởi hành hoặc xe buýt không hợp lệ" });
             }
-            
     
             if (times.length !== buses.length) {
                 return res.status(400).json({ message: "Số lượng giờ và bus_id phải tương ứng" });
             }
     
-            const daily_trip_count = Math.max(times.length, buses.length);
-
+            const daily_trip_count = times.length;
     
-           // Xóa tất cả các chuyến xe (`trips`) cũ của tuyến xe
-await Trip.deleteTripsByRouteId(route_id);
-
-// Cập nhật thông tin tuyến xe (`routes`)
-const result = await Route.updateRouteWithTrips(
-    route_id, departure_location, destination_location,
-    distance, travel_time, bus_type, ticket_price, daily_trip_count,
-    JSON.stringify(times),
-    JSON.stringify(buses)
-);
-
-if (result.affectedRows === 0) {
-    return res.status(404).json({ message: 'Không tìm thấy tuyến xe để cập nhật' });
-}
-
-// Tạo lại các chuyến xe mới tương ứng với tuyến xe
-const now = new Date();
-const daysToGenerate = 7;
-
-for (let day = 0; day < daysToGenerate; day++) {
-    const date = new Date(now);
-    date.setDate(date.getDate() + day);
-
-    for (let i = 0; i < times.length; i++) {
-        const time = times[i];
-        const bus_id = buses[i];
-
-        const [hour, minute] = time.split(':').map(Number);
-        const departure = new Date(date);
-        departure.setHours(hour, minute, 0, 0);
-
-        const [h, m] = travel_time.split(':').map(Number);
-        const arrival = new Date(departure.getTime() + ((h * 60 + m) * 60 * 1000));
-
-        await Trip.createTrip(
-            departure_location,
-            destination_location,
-            distance,
-            route_id,
-            bus_id,
-            departure,
-            arrival,
-            'ON_TIME',
-            ticket_price
-        );
-    }
-}
-
-return res.status(200).json({ success: true, message: 'Cập nhật tuyến xe và các chuyến xe thành công' });
-
+            // Xóa tất cả các chuyến xe cũ của tuyến
+            await Trip.deleteTripsByRouteId(route_id);
+    
+            // Cập nhật thông tin tuyến
+            const result = await Route.updateRouteWithTrips(
+                route_id,
+                departure_location,
+                destination_location,
+                distance,
+                travel_time,
+                bus_type,
+                ticket_price,
+                daily_trip_count,
+                JSON.stringify(times),
+                JSON.stringify(buses)
+            );
+    
+            if (result.affectedRows === 0) {
+                return res.status(404).json({ message: "Không tìm thấy tuyến xe để cập nhật" });
+            }
+    
+            // Tạo lại các chuyến xe mới
+            const now = new Date();
+            const daysToGenerate = 7;
+    
+            for (let day = 0; day < daysToGenerate; day++) {
+                const date = new Date(now);
+                date.setDate(date.getDate() + day);
+    
+                for (let i = 0; i < times.length; i++) {
+                    const time = times[i];
+                    const bus_id = buses[i];
+    
+                    const [hour, minute] = time.split(':').map(Number);
+                    const departure = new Date(date);
+                    departure.setHours(hour, minute, 0, 0);
+    
+                    const [h, m] = travel_time.split(':').map(Number);
+                    const arrival = new Date(departure.getTime() + ((h * 60 + m) * 60 * 1000));
+    
+                    const tripResult = await Trip.createTrip(
+                        departure_location,
+                        destination_location,
+                        distance,
+                        route_id,
+                        bus_id,
+                        departure,
+                        arrival,
+                        'ON_TIME',
+                        ticket_price
+                    );
+    
+                    const tripId = tripResult.tripId;
+                    if (tripId) {
+                        await TripStop.addTripStop(tripId, 'PICKUP', pickup_location);
+                        await TripStop.addTripStop(tripId, 'DROPOFF', dropoff_location);
+                    }
+                }
+            }
+    
+            return res.status(200).json({ success: true, message: 'Cập nhật tuyến xe và các chuyến xe thành công' });
     
         } catch (error) {
             console.error("❌ Lỗi khi cập nhật tuyến:", error);
             res.status(500).json({ message: "Lỗi server", error });
         }
     }
-
     
 
     
@@ -258,16 +274,24 @@ return res.status(200).json({ success: true, message: 'Cập nhật tuyến xe v
     }
 
 
-   async renderAdminRoutes(req, res) {
-    try {
-        const routes = await Route.getRouteAdmin();
-        const locations = await Location.getAllLocation();
-       res.render('admin/routes/routes', { title: "Quản lý Tuyến Xe", routes , locations});
-    } catch (error) {
-        console.log(error);
-        res.status(500).send("Lỗi khi tải danh sách tuyến xe");
-    }
-    }
+    async renderAdminRoutes(req, res) {
+        try {
+          const routes = await Route.getRouteAdmin();
+          const locations = await Location.getAllLocation();
+          const allBuses = await Bus.getAllBus(); // ✅ lấy toàn bộ thông tin xe buýt
+      
+          res.render('admin/routes/routes', {
+            title: "Quản lý Tuyến Xe",
+            routes,
+            locations,
+            allBuses
+          });
+        } catch (error) {
+          console.log(error);
+          res.status(500).send("Lỗi khi tải danh sách tuyến xe");
+        }
+      }
+      
 
     async getAllLocations(req, res) {
         try {
@@ -294,6 +318,14 @@ return res.status(200).json({ success: true, message: 'Cập nhật tuyến xe v
             }
     
             const routeDetails = await Route.getRouteDetailsById(route_id);
+                // Lấy điểm đón và trả từ 1 chuyến bất kỳ thuộc tuyến này
+            const anyTripId = await Trip.getAnyTripIdByRoute(route_id);
+            const tripStops = await Trip.getPickupAndDropoffLocations(anyTripId);
+
+            // Gán vào route để gửi về view
+            route.pickup_location = tripStops.pickup_location;
+            route.dropoff_location = tripStops.dropoff_location;
+
             if (!routeDetails) {
                 return res.status(404).send("Không tìm thấy chi tiết tuyến xe.");
             }
@@ -441,6 +473,48 @@ return res.status(200).json({ success: true, message: 'Cập nhật tuyến xe v
     }
     
     
+    async getAvailableBusesByTime(req, res) {
+        try {
+            const { bus_type, time, travel_time } = req.query;
+    
+            if (!bus_type || !time || !travel_time) {
+                return res.status(400).json({ message: 'Thiếu dữ liệu' });
+            }
+    
+            const allBuses = await Bus.getBusesByType(bus_type);
+            const allRoutes = await Route.getAllRoute();
+    
+            const fixedDate = '2024-01-01';
+            const requestedStart = new Date(`${fixedDate}T${time}:00`);
+            const [h, m, s] = travel_time.split(":").map(Number);
+            const requestedEnd = new Date(requestedStart.getTime() + (h * 60 + m) * 60000);
+    
+            const usedBusIds = new Set();
+    
+            for (const route of allRoutes) {
+                const departureTimes = JSON.parse(route.departure_times || "[]");
+                const busIds = JSON.parse(route.bus_ids || "[]");
+    
+                for (let i = 0; i < departureTimes.length; i++) {
+                    const routeStart = new Date(`${fixedDate}T${departureTimes[i]}:00`);
+                    const [rh, rm, rs] = (route.travel_time || '00:00:00').split(":").map(Number);
+                    const routeEnd = new Date(routeStart.getTime() + (rh * 60 + rm) * 60000);
+    
+                    // ❗ So sánh giao nhau
+                    if (requestedStart < routeEnd && requestedEnd > routeStart) {
+                        usedBusIds.add(busIds[i]);
+                    }
+                }
+            }
+    
+            const availableBuses = allBuses.filter(bus => !usedBusIds.has(bus.id.toString()));
+            return res.json({ availableBuses });
+    
+        } catch (error) {
+            console.error("Lỗi lấy xe khả dụng:", error);
+            res.status(500).json({ message: 'Lỗi server' });
+        }
+    }
     
     
 }

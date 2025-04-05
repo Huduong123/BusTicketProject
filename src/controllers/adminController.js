@@ -81,34 +81,30 @@ class AdminController {
             const newAdmin = req.body;
     
             if (!AdminController.isValidUsername(newAdmin.username)) {
-                return res.status(400).json({ message: "Tên đăng nhập không hợp lệ, không được chứa ký tự đặc biệt hoặc khoảng trắng" });
+                return res.status(400).send("Tên đăng nhập không hợp lệ");
             }
     
-            // Kiểm tra username có tồn tại không
             const admin = await Admin.getAdmin(newAdmin.username);
             if (admin.length > 0) {
-                return res.status(400).json({ message: "Admin đã tồn tại" });
+                return res.status(400).send("Tên đăng nhập đã tồn tại");
             }
     
-            // Kiểm tra email có tồn tại không
             const emailExists = await Admin.getAdminByEmail(newAdmin.email);
             if (emailExists.length > 0) {
-                return res.status(400).json({ message: "Email đã tồn tại" });
+                return res.status(400).send("Email đã tồn tại");
             }
     
-            // Hash mật khẩu
             newAdmin.password = await bcrypt.hash(newAdmin.password, 10);
     
-            // Thêm admin và lấy kết quả trả về
-            const createdAdmin = await Admin.addAdmin(newAdmin);
+            await Admin.addAdmin(newAdmin);
     
-            res.status(201).json({ message: "Admin added successfully", admin: createdAdmin });
-    
+            res.redirect('/admins/admin'); // 👉 chuyển về trang danh sách admin sau khi thêm
         } catch (error) {
             console.error("Error in addAdmin:", error);
-            res.status(500).json({ message: "Lỗi server", error: error.message });
+            res.status(500).send("Lỗi server khi thêm admin");
         }
     }
+    
     
 
     async updateAdmin(req, res) {
@@ -170,10 +166,26 @@ class AdminController {
         }
     }
 
+    
 
+      
+    async renderAdminAccounts(req, res) {
+        try {
+            const admins = await Admin.getAllAdmin(); // Lấy danh sách admin từ DB
+            res.render('admin/accountAdmin/listAdmin', {
+                title: "Quản lý tài khoản Admin",
+                admins
+            });
+        } catch (error) {
+            console.log(error);
+            res.status(500).send("Lỗi khi tải danh sách tài khoản admin");
+        }
+    }
+    
     async logout(req, res) {
         res.clearCookie('adminToken');
-        res.redirect('/admins/login-admin');
+        res.redirect('/admins/auth/login-admin');
+
     }
     
 }

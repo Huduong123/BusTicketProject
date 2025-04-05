@@ -1,0 +1,48 @@
+
+extends ../../layouts/layoutAdmin
+
+block content
+  .container.mt-4
+    h2.text-center.mb-4 Quản lý tài khoản Admin
+
+    a.btn.btn-success.mb-3(href="/admins/admin/add") ➕ Thêm Admin mới
+
+    table.table.table-bordered.table-hover
+      thead.table-dark
+        tr
+          th STT
+          th Tên đăng nhập
+          th Họ tên
+          th Email
+          th Số điện thoại
+          th Hành động
+      tbody
+        each admin, index in admins
+          tr
+            td #{index + 1}
+            td #{admin.username}
+            td #{admin.full_name}
+            td #{admin.email}
+            td #{admin.phone}
+            td
+              button.btn.btn-sm.btn-primary.me-2(onclick=`editAdmin(${admin.id})`) Sửa
+              button.btn.btn-sm.btn-danger(onclick=`deleteAdmin(${admin.id})`) Xoá
+
+  script.
+    function editAdmin(id) {
+      window.location.href = `/admins/admin/edit/${id}`;
+    }
+
+    function deleteAdmin(id) {
+      if (confirm('Bạn có chắc chắn muốn xoá admin này?')) {
+        fetch(`/admins/${id}`, {
+          method: 'DELETE'
+        })
+        .then(res => res.json())
+        .then(data => {
+          alert(data.message);
+          location.reload();
+        })
+        .catch(err => console.error(err));
+      }
+    }

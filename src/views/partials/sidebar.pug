@@ -1,39 +1,60 @@
-nav.sidebar
-  ul
-    li
-      a(href="/admins/dashboard") 🏠 Tổng quan
-    li
-      a(href="/admins/routes") 🚌 Quản lý Tuyến Xe
-    li
-      a(href="/admins/trips") 📅 Quản lý Chuyến Xe
-    li
-      a(href="/admins/tickets") 🎟️ Quản lý Vé Đặt
+nav.sidebar.bg-dark.text-white.px-3.py-4
+  h4.text-center.mb-4.text-uppercase TAXT BUS
+  ul.nav.flex-column.gap-2
+    li.nav-item
+      a.nav-link.text-white(href="/admins/dashboard") 
+        i.bi.bi-house-fill.me-2
+        | Tổng quan
+    li.nav-item
+      a.nav-link.text-white(href="/admins/routes")
+        i.bi.bi-signpost-split.me-2
+        | Quản lý Tuyến Xe
+    li.nav-item
+      a.nav-link.text-white(href="/admins/trips")
+        i.bi.bi-calendar2-range-fill.me-2
+        | Quản lý Chuyến Xe
+    li.nav-item
+      a.nav-link.text-white(href="/admins/tickets")
+        i.bi.bi-ticket-perforated-fill.me-2
+        | Quản lý Vé Đặt
 
-    // 🔽 Dropdown Quản lý tài khoản
-    li
-      a(href="javascript:void(0);" onclick="toggleMenu('accountMenu')") 👥 Quản lý tài khoản ▾
-      ul#accountMenu(style="display: none; padding-left: 20px;")
+    // 🔽 Danh mục hệ thống (Xe, địa điểm, điểm dừng,...)
+    li.nav-item
+      a.nav-link.text-white(data-bs-toggle="collapse" href="#resourceMenu" role="button")
+        i.bi.bi-collection-fill.me-2
+        | Quản lý danh mục ▾
+      ul#resourceMenu.collapse.ps-3
         li
-          a(href="/admins/customers") 👤 Khách hàng
+          a.nav-link.text-white(href="/admins/buses") 🚌 Quản lý Xe
         li
-          a(href="/admins/admin") 🛡️ Admin
+          a.nav-link.text-white(href="/admins/locations") 📍 Quản lý Địa điểm
+        li
+          a.nav-link.text-white(href="/admins/stops") ⛔ Quản lý Điểm Dừng
 
-    // 🔽 Dropdown Doanh Thu
-    li
-      a(href="javascript:void(0);" onclick="toggleMenu('revenueMenu')") 💰 Doanh Thu ▾
-      ul#revenueMenu(style="display: none; padding-left: 20px;")
+    // 🔽 Quản lý tài khoản
+    li.nav-item
+      a.nav-link.text-white(data-bs-toggle="collapse" href="#accountMenu" role="button")
+        i.bi.bi-people-fill.me-2
+        | Quản lý tài khoản ▾
+      ul#accountMenu.collapse.ps-3
         li
-          a(href="/admins/payments") 📄 Quản lí thanh toán
+          a.nav-link.text-white(href="/admins/users") 👤 Khách hàng
         li
-          a(href="/admins/payments/report") 📊 Thống kê doanh thu
+          a.nav-link.text-white(href="/admins/admin") 🛡️ Admin
 
-    li
-      a(href="/admins/settings") ⚙️ Cấu Hình & Cài Đặt
-    li.logout
-      a(href="/admins/logout") 🚪 Đăng xuất
+    // 🔽 Doanh thu
+    li.nav-item
+      a.nav-link.text-white(data-bs-toggle="collapse" href="#revenueMenu" role="button")
+        i.bi.bi-cash-coin.me-2
+        | Doanh Thu ▾
+      ul#revenueMenu.collapse.ps-3
+        li
+          a.nav-link.text-white(href="/admins/payments") 📄 Quản lý thanh toán
+        li
+          a.nav-link.text-white(href="/admins/payments/report") 📊 Thống kê doanh thu
 
-  script.
-    function toggleMenu(id) {
-      const menu = document.getElementById(id);
-      menu.style.display = (menu.style.display === 'none') ? 'block' : 'none';
-    }
+
+    li.nav-item.mt-4
+      a.nav-link.text-danger.fw-bold(href="/admins/logout")
+        i.bi.bi-box-arrow-right.me-2
+        | Đăng xuất

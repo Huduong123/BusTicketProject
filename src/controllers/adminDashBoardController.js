@@ -1,41 +1,57 @@
-// controllers/AdminDashboardController.js
+const Dashboard = require('../models/dashBoardModel');
 
-exports.showDashboard = async (req, res) => {
-    try {
-      // Dữ liệu mẫu (sau này thay bằng từ database)
-      const totalTrips = 120;
-      const ticketsSold = 540;
-      const monthlyRevenue = 50000000;
-      const totalRoutes = 36;
-  
-      const upcomingTrips = [
-        { code: "TRIP001", route: "Hà Nội → Đà Nẵng", time: "15:00 03/04/2025", status: "ON_TIME" },
-        { code: "TRIP002", route: "TP.HCM → Nha Trang", time: "16:30 03/04/2025", status: "CANCELED" },
-        { code: "TRIP003", route: "Huế → Hà Nội", time: "17:45 03/04/2025", status: "DELAYED" }
-      ];
-  
-      const recentTickets = [
-        { code: "VE12345", name: "Nguyễn Văn A", route: "Hà Nội → Đà Nẵng", price: 500000, time: "02/04/2025 21:15" },
-        { code: "VE12346", name: "Trần Thị B", route: "TP.HCM → Nha Trang", price: 450000, time: "02/04/2025 21:30" }
-      ];
-  
-      const revenueChart = {
-        labels: ['27/03', '28/03', '29/03', '30/03', '31/03', '01/04', '02/04'],
-        values: [10000000, 15000000, 12000000, 17000000, 9000000, 20000000, 13000000]
-      };
-  
-      res.render('admin/dashboard', {
-        totalTrips,
-        ticketsSold,
-        monthlyRevenue,
-        totalRoutes,
-        upcomingTrips,
-        recentTickets,
-        revenueChart
-      });
-    } catch (err) {
-      console.error("Lỗi hiển thị dashboard:", err);
-      res.status(500).send("Lỗi hiển thị dashboard.");
+class AdminDashboardController {
+    async showDashboard(req, res) {
+        try {
+            const [
+                totalTrips,
+                ticketsSold,
+                monthlyRevenue,
+                totalRoutes,
+                upcomingTrips,
+                recentTickets,
+                revenueData
+            ] = await Promise.all([
+                Dashboard.getTotalTrips(),
+                Dashboard.getTicketsSold(),
+                Dashboard.getMonthlyRevenue(),
+                Dashboard.getTotalRoutes(),
+                Dashboard.getUpcomingTrips(),
+                Dashboard.getRecentTickets(),
+                Dashboard.getRevenue7Days()
+            ]);
+
+            const revenueChart = {
+                labels: revenueData.map(r => new Date(r.date).toLocaleDateString('vi-VN')),
+                values: revenueData.map(r => r.revenue)
+            };
+
+            res.render('admin/dashboard', {
+                totalTrips,
+                ticketsSold,
+                monthlyRevenue,
+                formattedMonthlyRevenue: new Intl.NumberFormat('vi-VN').format(monthlyRevenue),
+                totalRoutes,
+                upcomingTrips: upcomingTrips.map(trip => ({
+                    code: `TRIP${trip.id.toString().padStart(3, '0')}`,
+                    route: `${trip.departure_location} → ${trip.destination_location}`,
+                    time: new Date(trip.departure_time).toLocaleString('vi-VN'),
+                    status: trip.status
+                })),
+                recentTickets: recentTickets.map(ticket => ({
+                    code: ticket.ticket_code,
+                    name: ticket.customer_name,
+                    route: `${ticket.departure_location} → ${ticket.destination_location}`,
+                    price: ticket.total_price_ticket,
+                    time: new Date(ticket.booking_time).toLocaleString('vi-VN')
+                })),
+                revenueChart
+            });
+        } catch (error) {
+            console.log("Lỗi dashboard:", error);
+            res.status(500).send("Lỗi server");
+        }
     }
-  };
-  
+}
+
+module.exports = new AdminDashboardController();

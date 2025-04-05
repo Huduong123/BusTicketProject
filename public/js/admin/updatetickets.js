@@ -20,7 +20,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const customer_name = document.getElementById("customer_name").value;
     const customer_phone = document.getElementById("customer_phone").value;
-
+    const pickup_location = document.getElementById("pickup_location").value;
+    const dropoff_location = document.getElementById("dropoff_location").value;
     // Lấy danh sách ghế đang hiển thị (ghế giữ lại)
     let seats = Array.from(document.querySelectorAll(".selected-seat")).map(el =>
       el.dataset.seat
@@ -49,6 +50,8 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({
           customer_name,
           customer_phone,
+          pickup_location,
+          dropoff_location,
           seat_numbers: allSeats,
           status: "BOOKED",
         }),

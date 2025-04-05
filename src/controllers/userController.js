@@ -125,69 +125,185 @@ class UserController {
         }
     }
     
-
+    async createUserFromAdmin(req, res) {
+        try {
+            const { username, full_name, phone, email, password } = req.body;
+    
+            // Check thiếu trường
+            if (!username || !full_name || !phone || !email || !password) {
+                return res.render('admin/users/adduser', {
+                    title: 'Thêm người dùng',
+                    error: 'Vui lòng nhập đầy đủ thông tin.',
+                    data: req.body
+                });
+            }
+    
+            if (!UserController.isValidUsername(username)) {
+                return res.render('admin/users/adduser', {
+                    title: 'Thêm người dùng',
+                    error: 'Tên đăng nhập không hợp lệ.',
+                    data: req.body
+                });
+            }
+    
+            if (!UserController.isValidPhoneNumber(phone)) {
+                return res.render('admin/users/adduser', {
+                    title: 'Thêm người dùng',
+                    error: 'Số điện thoại không hợp lệ.',
+                    data: req.body
+                });
+            }
+    
+            if (!UserController.isValidEmail(email)) {
+                return res.render('admin/users/adduser', {
+                    title: 'Thêm người dùng',
+                    error: 'Email không hợp lệ.',
+                    data: req.body
+                });
+            }
+    
+            const existingUser = await User.getUser(username);
+            if (existingUser.length > 0) {
+                return res.render('admin/users/adduser', {
+                    title: 'Thêm người dùng',
+                    error: 'Tên đăng nhập đã tồn tại.',
+                    data: req.body
+                });
+            }
+    
+            const existingPhone = await User.getUserByPhone(phone);
+            if (existingPhone.length > 0) {
+                return res.render('admin/users/adduser', {
+                    title: 'Thêm người dùng',
+                    error: 'Số điện thoại đã tồn tại.',
+                    data: req.body
+                });
+            }
+    
+            const existingEmail = await User.getUserByEmail(email);
+            if (existingEmail.length > 0) {
+                return res.render('admin/users/adduser', {
+                    title: 'Thêm người dùng',
+                    error: 'Email đã tồn tại.',
+                    data: req.body
+                });
+            }
+    
+            const hashedPassword = await bcrypt.hash(password, 10);
+    
+            await User.create({ username, full_name, phone, email, password: hashedPassword });
+    
+            // Redirect nếu thành công
+            res.redirect('/admins/users');
+    
+        } catch (error) {
+            console.error(error);
+            return res.render('admin/users/adduser', {
+                title: 'Thêm người dùng',
+                error: 'Đã xảy ra lỗi máy chủ.',
+                data: req.body
+            });
+        }
+    }
     async editUser(req, res) {
         try {
             const { id } = req.params;
             const { full_name, phone, email, password } = req.body;
     
-            // Kiểm tra xem user có tồn tại không
-            const existingUser = await User.getUserById(id);
-            if (!existingUser) {
-                return res.status(400).json({ message: "Người dùng không tồn tại!" });
+            const user = await User.getUserById(id);
+            if (!user) {
+                return res.render('admin/users/edituser', {
+                    title: "Sửa người dùng",
+                    error: "Người dùng không tồn tại!",
+                    user: {}
+                });
             }
     
-            // Kiểm tra số điện thoại nếu có thay đổi
-            if (phone && phone !== existingUser.phone) {
+            // Kiểm tra nếu số điện thoại thay đổi
+            if (phone && phone !== user.phone) {
                 if (!UserController.isValidPhoneNumber(phone)) {
-                    return res.status(400).json({ message: "Số điện thoại không hợp lệ." });
+                    return res.render('admin/users/edituser', {
+                        title: "Sửa người dùng",
+                        error: "Số điện thoại không hợp lệ.",
+                        user: { ...user, full_name, phone, email }
+                    });
                 }
-    
                 const phoneExists = await User.getUserByPhone(phone);
-                if (phoneExists.length > 0) {
-                    return res.status(400).json({ message: "Số điện thoại đã tồn tại." });
+                if (phoneExists.length > 0 && phoneExists[0].id != id) {
+                    return res.render('admin/users/edituser', {
+                        title: "Sửa người dùng",
+                        error: "Số điện thoại đã tồn tại.",
+                        user: { ...user, full_name, phone, email }
+                    });
                 }
             }
     
-            // Kiểm tra email nếu có thay đổi
-            if (email && email !== existingUser.email) {
+            // Kiểm tra nếu email thay đổi
+            if (email && email !== user.email) {
+                if (!UserController.isValidEmail(email)) {
+                    return res.render('admin/users/edituser', {
+                        title: "Sửa người dùng",
+                        error: "Email không hợp lệ.",
+                        user: { ...user, full_name, phone, email }
+                    });
+                }
                 const emailExists = await User.getUserByEmail(email);
-                if (emailExists.length > 0) {
-                    return res.status(400).json({ message: "Email đã tồn tại." });
+                if (emailExists.length > 0 && emailExists[0].id != id) {
+                    return res.render('admin/users/edituser', {
+                        title: "Sửa người dùng",
+                        error: "Email đã tồn tại.",
+                        user: { ...user, full_name, phone, email }
+                    });
                 }
             }
     
-            // Mã hóa mật khẩu nếu có cập nhật
+            // Hash mật khẩu nếu nhập
             let hashedPassword = null;
             if (password) {
                 hashedPassword = await bcrypt.hash(password, 10);
             }
     
-            // Chuẩn bị dữ liệu cập nhật
-            const updateUserData = { full_name, phone, email, password: hashedPassword };
-            await User.editUser(id, updateUserData);
+            await User.editUser(id, {
+                full_name,
+                phone,
+                email,
+                password: hashedPassword
+            });
     
-            return res.status(200).json({ message: "Thông tin người dùng đã được cập nhật!" });
+            // ✅ Sau khi cập nhật chuyển về danh sách
+            res.redirect('/admins/users');
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ message: "Lỗi server", error });
+            return res.render('admin/users/edituser', {
+                title: "Sửa người dùng",
+                error: "Đã xảy ra lỗi khi cập nhật người dùng.",
+                user: req.body
+            });
         }
     }
     
+    
 
     async deleteUser(req, res) {
-            try {
-                const { id } = req.params;
-                if (!id) {
-                    return res.status(400).json({ message: 'User ID is required' });
-                }
-                const result = await User.deleteUser(id);
-                res.status(200).json({ message: 'User deleted successfully', result });
-            } catch (error) {
-                console.log(error);
-                res.status(500).json(error);
+        try {
+            const { id } = req.params;
+            if (!id) {
+                return res.redirect('/admins/users'); // Nếu không có ID thì cũng quay về
             }
+    
+            const user = await User.getUserById(id);
+            if (!user) {
+                return res.redirect('/admins/users'); // Nếu không tồn tại
+            }
+    
+            await User.deleteUser(id);
+            res.redirect('/admins/users');
+        } catch (error) {
+            console.error("Lỗi khi xoá người dùng:", error);
+            res.redirect('/admins/users');
         }
+    }
+    
 
         async getCurrentUser(req, res) {
             try {
@@ -268,7 +384,30 @@ class UserController {
               res.status(500).send("Lỗi khi tải trang sửa người dùng");
             }
           }
-          
+          async renderAddUser(req, res) {
+            try {
+              res.render('admin/users/adduser', { title: 'Thêm người dùng' });
+            } catch (error) {
+              console.error(error);
+              res.status(500).send("Lỗi khi hiển thị form thêm người dùng");
+            }
+          }
+          async searchUser(req, res) {
+            try {
+                const filters = req.query;
+        
+                const users = await User.searchUsers(filters);
+        
+                res.render('admin/users/users', {
+                    title: 'Quản lý Khách hàng',
+                    users,
+                    ...filters // truyền lại giá trị tìm kiếm để giữ input
+                });
+            } catch (error) {
+                console.error("Lỗi tìm kiếm người dùng:", error);
+                res.status(500).send("Lỗi tìm kiếm người dùng");
+            }
+        }
 }
 
 module.exports = new UserController();

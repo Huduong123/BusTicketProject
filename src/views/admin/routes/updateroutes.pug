@@ -82,7 +82,13 @@ block content
         .mb-3
           label.form-label(for="ticket_price") Giá vé (VNĐ):
           input.form-control#ticket_price(type="number" name="ticket_price" required min="10000" step="1000" value=route.ticket_price placeholder="Nhập giá vé (VNĐ)")
+        .mb-3
+          label.form-label(for="pickup_location") Điểm đón:
+          input.form-control(type="text", name="pickup_location", required, placeholder="Nhập điểm đón", value=route.pickup_location || '')
 
+        .mb-3
+          label.form-label(for="dropoff_location") Điểm trả:
+          input.form-control(type="text", name="dropoff_location", required, placeholder="Nhập điểm trả", value=route.dropoff_location || '')
         .d-flex.justify-content-center.mt-4
           button.btn.btn-primary.btn-lg(type="submit") Cập Nhật Tuyến Xe
           a.btn.btn-secondary.btn-lg.ms-3(href="/admins/routes") Hủy

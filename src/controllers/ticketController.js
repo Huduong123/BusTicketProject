@@ -106,7 +106,8 @@ class TicketController {
     async updateTicket(req, res) {
         try {
           const { ticket_id } = req.params;
-          const { customer_name, customer_phone, status, seat_numbers } = req.body;
+          const { customer_name, customer_phone, status, seat_numbers, pickup_location, dropoff_location } = req.body;
+
       
           const ticket = await Ticket.getTicketById(ticket_id);
           if (!ticket) {
@@ -132,7 +133,7 @@ class TicketController {
           await Ticket.insertSeatsForTicket(ticket_id, seat_ids);
       
           // Cập nhật thông tin khách và trạng thái vé
-          await Ticket.updateTicketCustomerStatus(ticket_id, customer_name, customer_phone, status);
+          await Ticket.updateTicketCustomerStatusAndLocations(ticket_id, customer_name, customer_phone, pickup_location, dropoff_location, status);
       
           res.status(200).json({ message: "Cập nhật vé thành công!" });
         } catch (error) {

@@ -22,5 +22,7 @@ router.post('/delete/:route_id', checkAuthAdmin, routeController.deleteRoute);
 
 router.get('/search', checkAuthAdmin,routeController.searchRoutes);
 
+// [GET] Lấy xe theo loại và giờ, loại trừ xe đã dùng ở giờ đó
+router.get('/available-buses-by-time', checkAuthAdmin, routeController.getAvailableBusesByTime);
 
 module.exports = router

@@ -88,6 +88,41 @@ const getUserById = async (id) => {
     const [rows] = await pool.execute(sql, [id]);
     return rows.length > 0 ? rows[0] : null;
 }
+const searchUsers = async (filters) => {
+    const { username, full_name, email, phone, created_at } = filters;
+
+    let sql = "SELECT * FROM users WHERE 1=1";
+    const params = [];
+
+    if (username) {
+        sql += " AND username LIKE ?";
+        params.push(`%${username}%`);
+    }
+
+    if (full_name) {
+        sql += " AND full_name LIKE ?";
+        params.push(`%${full_name}%`);
+    }
+
+    if (email) {
+        sql += " AND email LIKE ?";
+        params.push(`%${email}%`);
+    }
+
+    if (phone) {
+        sql += " AND phone LIKE ?";
+        params.push(`%${phone}%`);
+    }
+
+    if (created_at) {
+        sql += " AND DATE(created_at) = ?";
+        params.push(created_at);
+    }
+
+    const [rows] = await pool.execute(sql, params);
+    return rows;
+};
+
 module.exports = {
-    getAll, getUser, create, getUserByPhone, getUserById, editUser, deleteUser, getUserByEmail
+    getAll, getUser, create, getUserByPhone, getUserById, editUser, deleteUser, getUserByEmail,searchUsers
 };

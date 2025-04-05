@@ -2,10 +2,10 @@ extends ../../layouts/layoutAdmin
 
 block content
   .container.mt-4
-    h2.text-center.mb-4 Quản lý Vé đặt
+    h2.text-center.text-primary.mb-4 Quản lý Vé đặt
 
     // Form tìm kiếm nâng cao
-    form(action="/admins/tickets/search" method="GET" class="row g-3 mb-4")
+    form(action="/admins/tickets/search" method="GET" class="row g-3 mb-4 bg-white p-4 rounded shadow-sm")
       .col-md-3
         label.form-label(for="customer_name") Tên người đặt
         input.form-control(type="text" name="customer_name" id="customer_name" value=(customer_name || ""))
@@ -22,27 +22,25 @@ block content
         label.form-label(for="status") Trạng thái
         select.form-select(name="status" id="status")
           option(value="") -- Chọn trạng thái --
-          option(value="BOOKED" selected=(status === 'BOOKED' ? 'selected' : undefined)) Đã đặt
-          option(value="CANCELED" selected=(status === 'CANCELED' ? 'selected' : undefined)) Đã hủy
-          option(value="PENDING" selected=(status === 'PENDING' ? 'selected' : undefined)) Chờ xử lý
-          option(value="USED" selected=(status === 'USED' ? 'selected' : undefined)) Đã sử dụng
+          option(value="BOOKED", selected=(status === 'BOOKED')) Đã đặt
+          option(value="CANCELED", selected=(status === 'CANCELED')) Đã hủy
+          option(value="PENDING", selected=(status === 'PENDING')) Chờ xử lý
+          option(value="USED", selected=(status === 'USED')) Đã sử dụng
 
       .col-md-3
         label.form-label(for="booking_time") Ngày đặt
         input.form-control(type="date" name="booking_time" id="booking_time" value=(booking_time || ""))
 
       .col-12.text-center
-        button.btn.btn-primary(type="submit") Tìm kiếm
-        a.btn.btn-secondary(href="/admins/tickets") Reset
+        button.btn.btn-primary.px-4(type="submit") <i class="bi bi-search"></i> Tìm kiếm
+        a.btn.btn-secondary.px-4.ms-2(href="/admins/tickets") <i class="bi bi-x-circle"></i> Reset
 
-    // Thông báo kết quả lọc (nếu có)
     if searchDescription
-      .alert.alert-info.d-flex.justify-content-between.align-items-center(role="alert")
+      .alert.alert-info.mt-3(role="alert")
         span= searchDescription
-        button.btn.btn-sm.btn-outline-danger(onclick="window.location.href='/admins/tickets'") X
 
-    .table-responsive
-      table.table.table-bordered.table-hover
+    .table-responsive.mt-4
+      table.table.table-bordered.table-hover.align-middle.text-center.shadow-sm.bg-white
         thead.table-dark
           tr
             th STT
@@ -56,35 +54,55 @@ block content
             th Điểm đón
             th Điểm trả
             th Ngày đặt
-            th Ngày cập nhật
+            th Cập nhật
             th Hành động
         tbody
           if tickets && tickets.length
             each ticket, index in tickets
               tr
                 td= index + 1
-                td= ticket.ticket_code
-                td= ticket.trip_name || '-' 
+                td.text-primary.fw-bold= ticket.ticket_code
+                td= ticket.trip_name || '-'
                 td= ticket.customer_name || '-'
                 td= ticket.customer_phone || '-'
-                td= ticket.ticket_price.toLocaleString('vi-VN') + ' đ'
+                td= ticket.ticket_price ? ticket.ticket_price.toLocaleString('vi-VN') + ' đ' : '-'
                 td= ticket.total_price_ticket ? ticket.total_price_ticket.toLocaleString('vi-VN') + ' đ' : '-'
-                - var displayStatus = ticket.status === 'BOOKED' ? 'Đã đặt' : ticket.status === 'CANCELED' ? 'Đã hủy' : ticket.status === 'PENDING' ? 'Chờ xử lý' : ticket.status === 'USED' ? 'Đã sử dụng' : 'Không xác định'
-                td= displayStatus
+
+                - let displayStatus = '';
+                - let statusClass = '';
+                if ticket.status === 'BOOKED'
+                  - displayStatus = 'Đã đặt';
+                  - statusClass = 'badge bg-success';
+                else if ticket.status === 'CANCELED'
+                  - displayStatus = 'Đã hủy';
+                  - statusClass = 'badge bg-danger';
+                else if ticket.status === 'PENDING'
+                  - displayStatus = 'Chờ xử lý';
+                  - statusClass = 'badge bg-warning text-dark';
+                else if ticket.status === 'USED'
+                  - displayStatus = 'Đã sử dụng';
+                  - statusClass = 'badge bg-secondary';
+                else
+                  - displayStatus = 'Không xác định';
+                  - statusClass = 'badge bg-dark';
+
+                td
+                  span(class=statusClass)= displayStatus
+
                 td= ticket.pickup_location || '-'
                 td= ticket.dropoff_location || '-'
-                td= new Date(ticket.booking_time).toLocaleString('vi-VN')
-                td= new Date(ticket.updated_at).toLocaleString('vi-VN')
+                td= ticket.booking_time ? new Date(ticket.booking_time).toLocaleString('vi-VN') : '-'
+                td= ticket.updated_at ? new Date(ticket.updated_at).toLocaleString('vi-VN') : '-'
                 td
-                  .d-flex.gap-2
-                    a.btn.btn-warning.btn-sm(href=`/admins/tickets/update/${ticket.id}`) Sửa
+                  .d-flex.flex-column.flex-md-row.justify-content-center.gap-2
+                    a.btn.btn-warning.btn-sm(href=`/admins/tickets/update/${ticket.id}`) <i class="bi bi-pencil-square"></i> Sửa
                     form(action=`/admins/tickets/cancel/${ticket.id}`, method="POST", class="d-inline")
-                      button.btn.btn-danger.btn-sm(type="submit" onclick="return confirm('Bạn có chắc muốn hủy vé này?')") Hủy
+                      button.btn.btn-danger.btn-sm(type="submit" onclick="return confirm('Bạn có chắc muốn hủy vé này?')") <i class="bi bi-x-circle"></i> Hủy
                     form(action=`/admins/tickets/remove/${ticket.id}`, method="POST", class="d-inline")
-                      button.btn.btn-outline-danger.btn-sm(type="submit" onclick="return confirm('Bạn có chắc muốn xóa hoàn toàn vé này?')") Xóa
+                      button.btn.btn-outline-danger.btn-sm(type="submit" onclick="return confirm('Bạn có chắc muốn xóa hoàn toàn vé này?')") <i class="bi bi-trash"></i> Xóa
           else
             tr
-              td.text-center(colspan="13") Không có vé nào được tìm thấy.
+              td(colspan="13").text-center.text-muted Không có vé nào được tìm thấy.
 
     .text-center.mt-4
-      a.btn.btn-success(href="/admins/tickets/add") Thêm vé thủ công
+      a.btn.btn-success.btn-lg(href="/admins/tickets/add") <i class="bi bi-plus-circle"></i> Thêm vé thủ công

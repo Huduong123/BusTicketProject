@@ -39,6 +39,15 @@ const getTicketsByUserId = async (user_id) => {
   const [rows] = await pool.execute(sql, [user_id]);
   return rows;
 };
+const updateTicketCustomerStatusAndLocations = async (ticket_id, customer_name, customer_phone, pickup_location, dropoff_location, status) => {
+  const sql = `
+    UPDATE tickets 
+    SET customer_name = ?, customer_phone = ?, pickup_location = ?, dropoff_location = ?, status = ?, updated_at = NOW() 
+    WHERE id = ?
+  `;
+  const [result] = await pool.execute(sql, [customer_name, customer_phone, pickup_location, dropoff_location, status, ticket_id]);
+  return result.affectedRows;
+};
 
 const addTicket = async (
   trip_id,
@@ -475,6 +484,7 @@ getTicketsByUserId,
     getDetailedTickets,
 
 updateSeatAndDepartureTime,
+updateTicketCustomerStatusAndLocations,
         // Các hàm cập nhật ghế và khách hàng
         getSeatIdsByTicketId,
         getSeatsByTripId,

@@ -1,0 +1,96 @@
+/* Dashboard thống kê */
+.dashboard-card {
+    color: #fff;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease-in-out;
+    text-align: center;
+    background: linear-gradient(135deg, #00c6ff, #0072ff);
+  }
+  
+  .dashboard-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  }
+  
+  .dashboard-icon {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+  }
+  
+  .dashboard-title {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+  }
+  
+  .dashboard-value {
+    font-size: 2rem;
+    font-weight: bold;
+  }
+  
+  /* Card màu riêng biệt */
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, #1d2b64, #f8cdda);
+  }
+  .bg-gradient-success {
+    background: linear-gradient(135deg, #56ab2f, #a8e063);
+  }
+  .bg-gradient-warning {
+    background: linear-gradient(135deg, #f7971e, #ffd200);
+  }
+  .bg-gradient-info {
+    background: linear-gradient(135deg, #00c6ff, #0072ff);
+  }
+  /* Table container */
+.table-section {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    margin-bottom: 40px;
+  }
+  
+  /* Table header */
+  .table thead {
+    background: #f0f4f8;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+  }
+  
+  /* Table body hover */
+  .table tbody tr:hover {
+    background-color: #f8f9fa;
+  }
+  
+  /* Table cells */
+  .table td, .table th {
+    vertical-align: middle;
+    font-size: 0.95rem;
+  }
+  
+  /* Trạng thái badge đẹp hơn */
+  .badge {
+    font-size: 0.8rem;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+  
+  .badge i {
+    margin-right: 4px;
+  }
+  
+  /* Title các phần */
+  .section-title {
+    color: #333;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    border-left: 4px solid #007bff;
+    padding-left: 12px;
+  }
+  

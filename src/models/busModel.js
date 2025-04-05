@@ -47,6 +47,30 @@ const getBusesByType = async (bus_type) => {
     const [rows] = await pool.execute(sql, [bus_type]);
     return rows;
 };
+const getBusById = async (bus_id) => {
+    const sql = 'SELECT * FROM buses WHERE id = ?';
+    const [rows] = await pool.execute(sql, [bus_id]);
+    return rows;
+};
+const getBusByLicensePlate = async (license_plate) => {
+    const sql = 'SELECT * FROM buses WHERE license_plate = ?';
+    const [rows] = await pool.execute(sql, [license_plate]);
+    return rows;
+};
+const getAvailableBuses = async (bus_type, fromDate, toDate) => {
+    const sql = `
+        SELECT * FROM buses 
+        WHERE bus_type = ?
+        AND id NOT IN (
+            SELECT DISTINCT bus_id FROM trips 
+            WHERE (departure_time BETWEEN ? AND ? OR estimated_arrival_time BETWEEN ? AND ?)
+        )
+    `;
+    const [rows] = await pool.execute(sql, [bus_type, fromDate, toDate, fromDate, toDate]);
+    return rows;
+};
+
+
 
 module.exports = {
     getAllBus,
@@ -54,6 +78,9 @@ module.exports = {
     updateBus,
     deleteBus,
     searchBus,
-    getBusesByType
+    getBusesByType,
+    getBusById,
+    getBusByLicensePlate,
+    getAvailableBuses
 
 };

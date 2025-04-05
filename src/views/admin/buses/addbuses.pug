@@ -1,0 +1,27 @@
+extends ../../layouts/layoutAdmin
+
+block content
+  .container.mt-4
+    h2.text-center.mb-4 Thêm xe mới
+
+    if error
+      .alert.alert-danger #{error}
+    if success
+      .alert.alert-success #{success}
+
+    form(method="POST", action="/admins/buses/add", class="row g-3 border p-4 rounded bg-light")
+      .col-md-6
+        label.form-label(for="license_plate") Biển số xe
+        input.form-control(type="text", name="license_plate", id="license_plate", required, value=(data && data.license_plate) || '')
+
+      .col-md-6
+        label.form-label(for="bus_type") Loại xe
+        select.form-select(name="bus_type", id="bus_type", required)
+          option(value="") -- Chọn loại xe --
+          option(value="Xe giường nằm" selected=(data && data.bus_type === 'Xe giường nằm')) Xe giường nằm
+          option(value="Xe limousine" selected=(data && data.bus_type === 'Xe limousine')) Xe limousine
+          option(value="Xe ghế ngồi" selected=(data && data.bus_type === 'Xe ghế ngồi')) Xe ghế ngồi
+
+      .col-12.text-center
+        button.btn.btn-success(type="submit") ➕ Thêm xe
+        a.btn.btn-secondary.ms-2(href="/admins/buses") Quay lại

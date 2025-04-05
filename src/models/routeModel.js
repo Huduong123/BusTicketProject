@@ -20,6 +20,11 @@ const getRouteById = async (route_id) => {
 
     return rows.length > 0 ? rows[0] : null;
 };
+const checkRouteExists = async (departure_location, destination_location) => {
+    const sql = `SELECT id FROM routes WHERE departure_location = ? AND destination_location = ? LIMIT 1`;
+    const [rows] = await pool.execute(sql, [departure_location, destination_location]);
+    return rows.length > 0;
+};
 
 const getRoutewithDepartureAndDestination = async () => {
     const sql = `
@@ -297,13 +302,16 @@ const getTripsByRouteInToday = async (departure, destination) => {
         JOIN routes r ON t.route_id = r.id
         WHERE r.departure_location = ?
         AND r.destination_location = ?
+        AND t.status = 'ON_TIME'
+        AND t.departure_time >= NOW() + INTERVAL 45 MINUTE -- ✅ Chỉ lấy chuyến từ giờ hiện tại + 45 phút
         AND DATE(t.departure_time) = CURDATE()
-        AND TIME(t.departure_time) >= CURTIME()
         ORDER BY t.departure_time
     `;
     const [rows] = await pool.execute(sql, [departure, destination]);
     return rows;
 };
+
+
 
 
 
@@ -327,6 +335,19 @@ const getRouteDetailsById = async (route_id) => {
 
     return rows.length > 0 ? rows[0] : null;
 };
+const getRoutesByTime = async (time) => {
+    const sql = `
+        SELECT id, departure_times, bus_ids
+        FROM routes
+        WHERE JSON_CONTAINS(departure_times, JSON_QUOTE(?))
+    `;
+    const [rows] = await pool.execute(sql, [time]);
+    rows.forEach(r => {
+        r.departure_times = JSON.parse(r.departure_times || '[]');
+        r.bus_ids = JSON.parse(r.bus_ids || '[]');
+    });
+    return rows;
+};
 
 
 module.exports = {
@@ -342,7 +363,9 @@ module.exports = {
     getRoutewithDepartureAndDestination,
     searchRoutes,
     getRouteDetailsById,
-    getTripsByRouteInToday
+    getTripsByRouteInToday,
+    checkRouteExists,
+    getRoutesByTime
 }
 
 

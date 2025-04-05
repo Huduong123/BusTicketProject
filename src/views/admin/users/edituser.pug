@@ -4,6 +4,9 @@ block content
   .container.mt-4
     h2.text-center.mb-4 Sửa thông tin người dùng
 
+    if error
+      .alert.alert-danger #{error}
+
     form(action=`/admins/users/edit/${user.id}`, method="POST")
       .mb-3
         label.form-label(for="username") Tên đăng nhập
@@ -11,15 +14,15 @@ block content
 
       .mb-3
         label.form-label(for="full_name") Họ tên
-        input.form-control(type="text", id="full_name", name="full_name", required value=user.full_name)
+        input.form-control(type="text", id="full_name", name="full_name", required value=user.full_name || '')
 
       .mb-3
         label.form-label(for="email") Email
-        input.form-control(type="email", id="email", name="email", required value=user.email)
+        input.form-control(type="email", id="email", name="email", required value=user.email || '')
 
       .mb-3
         label.form-label(for="phone") SĐT
-        input.form-control(type="text", id="phone", name="phone", required value=user.phone)
+        input.form-control(type="text", id="phone", name="phone", required value=user.phone || '')
 
       .mb-3
         label.form-label(for="password") Mật khẩu mới (nếu muốn đổi)

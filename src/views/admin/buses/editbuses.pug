@@ -1,0 +1,28 @@
+extends ../../layouts/layoutAdmin
+
+block content
+  .container.mt-4
+    h2.text-center.mb-4 Cập nhật thông tin xe
+
+    if error
+      .alert.alert-danger #{error}
+
+    form(method="POST", action=`/admins/buses/edit/${bus.id}`, class="row g-3 border p-4 rounded bg-light")
+      .col-md-6
+        label.form-label(for="license_plate") Biển số xe
+        input.form-control(type="text", name="license_plate", id="license_plate", required, value=bus.license_plate)
+
+      .col-md-6
+        label.form-label(for="bus_type") Loại xe
+        select.form-select(name="bus_type", required)
+          option(value="Xe giường nằm", selected=(bus.bus_type === 'Xe giường nằm')) Xe giường nằm
+          option(value="Xe limousine", selected=(bus.bus_type === 'Xe limousine')) Xe limousine
+          option(value="Xe ghế ngồi", selected=(bus.bus_type === 'Xe ghế ngồi')) Xe ghế ngồi
+
+      .col-md-6
+        label.form-label(for="seat_capacity") Số ghế
+        input.form-control(type="number", name="seat_capacity", id="seat_capacity", readonly value=bus.seat_capacity)
+
+      .col-12.text-center
+        button.btn.btn-primary(type="submit") ✅ Cập nhật
+        a.btn.btn-secondary(href="/admins/buses") Quay lại

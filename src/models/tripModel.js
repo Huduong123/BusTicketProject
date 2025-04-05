@@ -206,29 +206,33 @@ const searchTripsWithDetails = async (departure_location, destination_location, 
             t.departure_time AS 'Thời gian đi',
             t.estimated_arrival_time AS 'Thời gian đến',
             b.bus_type AS 'Loại xe',
-            (b.seat_capacity - COALESCE((SELECT COUNT(*) FROM seats s WHERE s.trip_id = t.id AND s.status = 'BOOKED'), 0)) AS 'Số ghế trống',
+            (b.seat_capacity - COALESCE(
+                (SELECT COUNT(*) FROM seats s WHERE s.trip_id = t.id AND s.status = 'BOOKED'), 0)
+            ) AS 'Số ghế trống',
             t.trip_price AS 'Giá tiền'
         FROM trips t
         JOIN buses b ON t.bus_id = b.id
-        WHERE 1=1
+        WHERE t.status = 'ON_TIME'
     `;
-    
+
     let values = [];
 
     if (departure_location) {
         sql += ' AND t.departure_location = ?';
         values.push(departure_location);
     }
+
     if (destination_location) {
         sql += ' AND t.destination_location = ?';
         values.push(destination_location);
     }
+
     if (departure_time) {
         sql += ' AND DATE(t.departure_time) = ?';
         values.push(departure_time);
     }
-    
-    sql += " ORDER BY t.departure_time";
+
+    sql += ' ORDER BY t.departure_time';
 
     const [rows] = await pool.execute(sql, values);
     return rows;

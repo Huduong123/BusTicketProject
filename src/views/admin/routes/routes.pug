@@ -51,7 +51,6 @@ block content
         button.btn.btn-primary(type="submit") Tìm kiếm
         a.btn.btn-secondary(href="/admins/routes") Reset
 
-    // ✅ Hiển thị mô tả tìm kiếm nếu có
     if searchDescription
       .alert.alert-info.d-flex.justify-content-between.align-items-center(role="alert")
         span= searchDescription
@@ -69,6 +68,7 @@ block content
           th Giá vé
           th Số chuyến mỗi ngày
           th Giờ khởi hành
+          th(style="min-width:220px") Xe buýt
           th Điểm đón
           th Điểm trả
           th Tự động tạo chuyến?
@@ -83,6 +83,7 @@ block content
             - let hours = parseInt(timeParts[0])
             - let minutes = parseInt(timeParts[1])
             - let formattedTime = hours > 0 ? `${hours} giờ ${minutes} phút` : `${minutes} phút`
+            - let busList = JSON.parse(route.bus_ids || '[]')
             tr
               td= index + 1
               td= route.departure_location
@@ -93,6 +94,17 @@ block content
               td= route.ticket_price.toLocaleString('vi-VN') + ' đ'
               td= route.daily_trip_count
               td= JSON.parse(route.departure_times || '[]').join(', ')
+              td(style="min-width:220px; max-height:150px; overflow-y:auto")
+                if busList.length
+                  ul.mb-0
+                    each busId in busList
+                      - const bus = allBuses.find(b => b.id === parseInt(busId))
+                      if bus
+                        li= `${bus.bus_type} - ${bus.license_plate}`
+                      else
+                        li.text-danger Xe không tồn tại (ID: #{busId})
+                else
+                  | ---
               td= route.pickup_location || '---'
               td= route.dropoff_location || '---'
               td= route.auto_generate_trips ? 'Có' : 'Không'
@@ -106,7 +118,7 @@ block content
                     button.btn.btn-danger.btn-sm(type="submit" onclick="return confirm('Bạn có chắc muốn xóa tuyến này?')") Xóa
         else
           tr
-            td.text-center(colspan="15") Không tìm thấy tuyến nào.
+            td.text-center(colspan="17") Không tìm thấy tuyến nào.
 
     .text-center.mt-4
       a.btn.btn-success(href="/admins/routes/addroutes") Thêm tuyến xe mới

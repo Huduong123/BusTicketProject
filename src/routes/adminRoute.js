@@ -17,14 +17,17 @@ const paymentAdminRoute = require('../routes/admin/paymentAdminRoute');
 router.use('/payments', paymentAdminRoute)
 
 const userAdminRoute = require('../routes/admin/userAdminRoute');
-router.use('/customers', userAdminRoute)
+router.use('/users', userAdminRoute)
 
+const busAdminRoute = require('../routes/admin/busAdminRoute');
+router.use('/buses', busAdminRoute)
 router.get('/auth/login-admin', (req, res) => {
     res.render('admin/dangnhapAdmin');
 });
 router.get('/', checkAuthAdmin, adminController.getAdminPage);
-adminDashboardController = require('../controllers/adminDashBoardController');
-router.get('/dashboard', checkAuthAdmin, adminDashboardController.showDashboard);
+
+const dashboardAdminRoute = require('../routes/admin/dashboardAdminRoute');
+router.use('/dashboard', dashboardAdminRoute);
 
 // [GET] localhost:3000/admins
 router.get('/list',checkAuthAdmin, adminController.getAllAdmin);
@@ -40,6 +43,10 @@ router.put('/:id',checkAuthAdmin, adminController.updateAdmin);
 // [DELETE] localhost:3000/admins/:id (Xóa admin)
 router.delete('/:id',checkAuthAdmin, adminController.deleteAdmin);
 
+const authAdminRoute = require('../routes/admin/authAdminRoute');
+router.use('/auth', authAdminRoute);
+const accountAdminRoute = require('../routes/admin/accountAdminRoute');
+router.use('/admin', accountAdminRoute); // Điều hướng /admins/admin đến listAdmin
 
 
 router.get('/admin/dashboard', (req, res) => {

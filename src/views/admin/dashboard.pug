@@ -1,79 +1,93 @@
 extends ../layouts/layoutAdmin
 
+block head
+  link(rel="stylesheet", href="/css/dashboard.css")
+
 block content
   .container.mt-4
-    h2.mb-4 Bảng điều khiển hệ thống
+    h2.mb-5.text-center.text-primary.fw-bold Bảng điều khiển hệ thống
 
     // Thống kê tổng quan
-    .row.g-3
+    .row.g-4
       .col-md-3
-        .card.text-bg-primary.shadow-sm
-          .card-body
-            h5.card-title Tổng số chuyến xe
-            p.display-6 #{totalTrips}
+        .dashboard-card.bg-gradient-primary
+          .dashboard-icon 🚌
+          .dashboard-title Tổng chuyến xe
+          .dashboard-value #{totalTrips}
       .col-md-3
-        .card.text-bg-success.shadow-sm
-          .card-body
-            h5.card-title Vé đã bán
-            p.display-6 #{ticketsSold}
+        .dashboard-card.bg-gradient-success
+          .dashboard-icon 🎫
+          .dashboard-title Vé đã bán
+          .dashboard-value #{ticketsSold}
       .col-md-3
-        .card.text-bg-warning.shadow-sm
-          .card-body
-            h5.card-title Doanh thu tháng
-            p.display-6 #{monthlyRevenue.toLocaleString()} VNĐ
+        .dashboard-card.bg-gradient-warning
+          .dashboard-icon 💰
+          .dashboard-title Doanh thu tháng
+          .dashboard-value #{formattedMonthlyRevenue} VNĐ
       .col-md-3
-        .card.text-bg-info.shadow-sm
-          .card-body
-            h5.card-title Tổng số tuyến xe
-            p.display-6 #{totalRoutes}
+        .dashboard-card.bg-gradient-info
+          .dashboard-icon 🗺️
+          .dashboard-title Tổng tuyến xe
+          .dashboard-value #{totalRoutes}
 
     // Biểu đồ doanh thu
-    h4.mt-5.mb-3 Doanh thu 7 ngày gần nhất
-    canvas#revenueChart(style="max-height: 300px;")
+    h4.mt-5.mb-3.text-uppercase.text-secondary.fw-bold Doanh thu 7 ngày gần nhất
+    .card.shadow-sm.mb-4
+      .card-body
+        canvas#revenueChart(style="max-height: 320px")
 
-    // Danh sách chuyến sắp khởi hành
-    h4.mt-5.mb-3 Các chuyến xe sắp khởi hành hôm nay
-    table.table.table-striped.table-bordered
-      thead
-        tr
-          th Mã chuyến
-          th Tuyến đường
-          th Giờ khởi hành
-          th Trạng thái
-      tbody
-        each trip in upcomingTrips
+    // 🚍 Chuyến sắp khởi hành
+    h4.section-title Các chuyến xe sắp khởi hành hôm nay
+    .table-section
+      table.table.table-hover
+        thead
           tr
-            td #{trip.code}
-            td #{trip.route}
-            td #{trip.time}
-            td 
-              if trip.status == 'ON_TIME'
-                span.badge.bg-success ON_TIME
-              else if trip.status == 'CANCELED'
-                span.badge.bg-danger CANCELED
-              else if trip.status == 'DELAYED'
-                span.badge.bg-warning.text-dark DELAYED
-              else
-                span.badge.bg-secondary #{trip.status}
+            th Mã chuyến
+            th Tuyến đường
+            th Giờ khởi hành
+            th Trạng thái
+        tbody
+          each trip in upcomingTrips
+            tr
+              td.fw-bold= trip.code
+              td= trip.route
+              td= trip.time
+              td 
+                if trip.status == 'ON_TIME'
+                  span.badge.bg-success.d-inline-flex.align-items-center
+                    i.bi.bi-check-circle-fill
+                    | ON TIME
+                else if trip.status == 'CANCELED'
+                  span.badge.bg-danger.d-inline-flex.align-items-center
+                    i.bi.bi-x-circle-fill
+                    | CANCELED
+                else if trip.status == 'DELAYED'
+                  span.badge.bg-warning.text-dark.d-inline-flex.align-items-center
+                    i.bi.bi-clock-history
+                    | DELAYED
+                else
+                  span.badge.bg-secondary= trip.status
 
-    // Vé mới đặt
-    h4.mt-5.mb-3 Vé đặt gần đây
-    table.table.table-hover
-      thead
-        tr
-          th Mã vé
-          th Tên khách
-          th Tuyến
-          th Giá
-          th Thời gian đặt
-      tbody
-        each ticket in recentTickets
+    // 🧾 Vé mới đặt
+    h4.section-title Vé đặt gần đây
+    .table-section
+      table.table.table-hover
+        thead
           tr
-            td #{ticket.code}
-            td #{ticket.name}
-            td #{ticket.route}
-            td #{ticket.price.toLocaleString()} VNĐ
-            td #{ticket.time}
+            th Mã vé
+            th Tên khách
+            th Tuyến
+            th Giá
+            th Thời gian đặt
+        tbody
+          each ticket in recentTickets
+            tr
+              td.fw-medium.text-primary= ticket.code
+              td= ticket.name
+              td= ticket.route
+              td.text-success= ticket.price.toLocaleString() + ' VNĐ'
+              td.text-muted= ticket.time
+
 
   // Script biểu đồ
   script(src="https://cdn.jsdelivr.net/npm/chart.js")
@@ -82,13 +96,15 @@ block content
     const revenueChart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: !{JSON.stringify(revenueChart.labels)}, // ['27/03', '28/03', ...]
+        labels: !{JSON.stringify(revenueChart.labels)},
         datasets: [{
           label: 'Doanh thu (VNĐ)',
-          data: !{JSON.stringify(revenueChart.values)}, // [10000000, 15000000, ...]
-          borderColor: 'rgb(75, 192, 192)',
+          data: !{JSON.stringify(revenueChart.values)},
+          borderColor: '#ff7f50',
+          backgroundColor: 'rgba(255, 127, 80, 0.3)',
           tension: 0.3,
-          fill: false
+          fill: true,
+          pointBackgroundColor: '#dc3545'
         }]
       },
       options: {
@@ -97,6 +113,15 @@ block content
           legend: {
             display: true,
             position: 'top'
+          }
+        },
+        scales: {
+          y: {
+            ticks: {
+              callback: function(value) {
+                return value.toLocaleString() + ' ₫';
+              }
+            }
           }
         }
       }

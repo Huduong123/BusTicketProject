@@ -1,0 +1,33 @@
+extends ../../layouts/layoutAdmin
+
+block content
+  .container.mt-4
+    h2.text-center.mb-4 Thêm người dùng
+
+    if error
+      .alert.alert-danger(role="alert") #{error}
+
+    form(method="POST", action="/admins/users/add", class="row g-3 border p-4 rounded bg-light")
+      .col-md-6
+        label.form-label(for="username") Tên đăng nhập
+        input.form-control(type="text", name="username", required, value=(data && data.username ? data.username : ''))
+
+      .col-md-6
+        label.form-label(for="password") Mật khẩu
+        input.form-control(type="password", name="password", required)
+
+      .col-md-6
+        label.form-label(for="full_name") Họ tên
+        input.form-control(type="text", name="full_name", required, value=(data && data.full_name ? data.full_name : ''))
+
+      .col-md-6
+        label.form-label(for="phone") Số điện thoại
+        input.form-control(type="text", name="phone", required, value=(data && data.phone ? data.phone : ''))
+
+      .col-md-6
+        label.form-label(for="email") Email
+        input.form-control(type="email", name="email", required, value=(data && data.email ? data.email : ''))
+
+      .col-12.text-center
+        button.btn.btn-success(type="submit") ➕ Thêm người dùng
+        a.btn.btn-secondary.ms-2(href="/admins/users") Quay lại
